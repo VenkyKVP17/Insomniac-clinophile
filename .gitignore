@@ -1,0 +1,48 @@
+# --- Pantheon VPS Home Ignore ---
+
+# Bloat & Caches
+.antigravity-server/
+.cache/
+.npm/
+.gemini/
+.local/
+.venv/
+.claude/
+node_modules/
+__pycache__/
+
+# Application Data & Databases
+*.db
+*.db-journal
+*.sqlite
+data/
+pantheon_n8n/data/
+vp/**/node_modules/
+vp/05-Development/pantheon-server/data/
+
+# Archives & Temporary
+*.tar.gz
+*.log
+nyx_bot.log
+tmux-client-*.log
+
+# SECRETS (STRICT)
+.ssh/
+.aws/
+.gnupg/
+.pki/
+*.key
+*.pem
+.env
+.env.*
+secrets.json
+agent-registry.json
+
+# Git sub-repos (Track only existence, ignore internals)
+# We want to know these exist but don't want to track their history in the parent
+vp/.git/
+pantheon_n8n/.git/
+
+# OS Specific
+.DS_Store
+.sudo_as_admin_successful

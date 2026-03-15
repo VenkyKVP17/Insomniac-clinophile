@@ -1,0 +1,519 @@
+{
+  "name": "Pantheon: NYX Telegram Master v2",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "pantheon-telegram",
+        "options": {
+          "responseMode": "lastNode"
+        }
+      },
+      "id": "telegram-webhook",
+      "name": "Telegram Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1.1,
+      "position": [0, 600],
+      "webhookId": "pantheon-telegram"
+    },
+    {
+      "parameters": {
+        "jsCode": "const body = $input.item.json.body || $input.item.json;\nconst message = body.message || {};\nconst callback = body.callback_query || null;\n\nreturn [{\n  json: {\n    is_callback: !!callback,\n    callback_id: callback?.id,\n    callback_data: callback?.data,\n    chat_id: (callback?.message?.chat?.id || message?.chat?.id || '').toString(),\n    user_name: message?.from?.username || callback?.from?.username || 'User',\n    message_id: message?.message_id || callback?.message?.message_id,\n    text: message?.text || message?.caption || '',\n    has_voice: !!message?.voice,\n    has_photo: !!message?.photo,\n    voice_file_id: message?.voice?.file_id,\n    photo_file_id: message?.photo ? message.photo[message.photo.length - 1].file_id : null,\n    is_command: (message?.text || '').startsWith('/')\n  }\n}];"
+      },
+      "id": "auth-extract",
+      "name": "Extract & Auth",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [200, 600]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "is-authorized",
+              "leftValue": "={{ $json.chat_id }}",
+              "rightValue": "={{ $env.USER_CHAT_ID }}",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "check-auth",
+      "name": "Check Auth",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [400, 600]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "is-callback",
+              "leftValue": "={{ $json.is_callback }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "true"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "is-callback",
+      "name": "Is Callback?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [600, 600]
+    },
+    {
+      "parameters": {
+        "url": "=https://api.telegram.org/bot{{ $env.TELEGRAM_BOT_TOKEN }}/answerCallbackQuery",
+        "method": "POST",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"callback_query_id\": \"{{ $json.callback_id }}\",\n  \"text\": \"Processing action...\"\n}",
+        "options": {}
+      },
+      "id": "ack-callback",
+      "name": "Ack Callback",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [800, 400]
+    },
+    {
+      "parameters": {
+        "jsCode": "const data = $input.item.json.callback_data || '';\nconst parts = data.split(':');\nreturn [{\n  json: {\n    ...$input.item.json,\n    action: parts[0],\n    param: parts[1],\n    value: parts[2] || ''\n  }\n}];"
+      },
+      "id": "parse-callback",
+      "name": "Parse Callback",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1000, 400]
+    },
+    {
+      "parameters": {
+        "dataType": "string",
+        "value1": "={{ $json.action }}",
+        "rules": {
+          "rules": [
+            {
+              "value2": "agent"
+            },
+            {
+              "value2": "task",
+              "outputIndex": 1
+            },
+            {
+              "value2": "log",
+              "outputIndex": 2
+            },
+            {
+              "value2": "view",
+              "outputIndex": 3
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "callback-router",
+      "name": "Callback Router",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3,
+      "position": [1200, 400]
+    },
+    {
+      "parameters": {
+        "url": "={{ $env.PANTHEON_SERVER_URL }}/api/nyx/agent/{{ $json.param }}",
+        "method": "POST",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-Pantheon-Key",
+              "value": "={{ $env.PANTHEON_API_KEY }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"synthesize\": true\n}",
+        "options": {}
+      },
+      "id": "trigger-agent",
+      "name": "Trigger Agent",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [1400, 200]
+    },
+    {
+      "parameters": {
+        "command": "={{ $json.param === 'done' ? 'python3 /scripts/chronos_tasks.py \"done\" \"' + $json.value.split('_')[0] + '\" \"' + $json.value.split('_')[1] + '\"' : 'echo \"Unknown task action\"' }}"
+      },
+      "id": "task-action",
+      "name": "Task Action",
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [1400, 350]
+    },
+    {
+      "parameters": {
+        "command": "={{ $json.param === 'expense' ? 'python3 /scripts/log_expense.py \"' + $json.value.split('_')[0] + '\" \"' + $json.value.split('_')[1] + '\" \"Logged via n8n button\"' : 'echo \"Unknown log action\"' }}"
+      },
+      "id": "log-action",
+      "name": "Log Action",
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [1400, 500]
+    },
+    {
+      "parameters": {
+        "command": "={{ 'python3 /scripts/aias_sentinel.py \"' + $json.param + '\"' }}"
+      },
+      "id": "view-action",
+      "name": "View Action",
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [1400, 650]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "is-command",
+              "leftValue": "={{ $json.is_command }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "true"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "is-command",
+      "name": "Is Command?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [800, 800]
+    },
+    {
+      "parameters": {
+        "jsCode": "const text = $input.item.json.text.toLowerCase();\nconst command = text.split(' ')[0].substring(1);\nreturn [{\n  json: {\n    ...$input.item.json,\n    cmd_key: command\n  }\n}];"
+      },
+      "id": "parse-command",
+      "name": "Parse Command",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1000, 700]
+    },
+    {
+      "parameters": {
+        "dataType": "string",
+        "value1": "={{ $json.cmd_key }}",
+        "rules": {
+          "rules": [
+            {
+              "value2": "help"
+            },
+            {
+              "value2": "status",
+              "outputIndex": 1
+            }
+          ]
+        },
+        "options": {
+          "fallbackOutput": 2
+        }
+      },
+      "id": "command-router",
+      "name": "Command Router",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3,
+      "position": [1200, 700]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "set-help",
+              "name": "response",
+              "value": "🏛️ *Pantheon Commands*\n\n🏥 /duty - Medical status\n💰 /finance - Money summary\n📈 /market - Investments\n📅 /schedule - Calendar\n🛡️ /tasks - Vault tasks\n📜 /study - Academic plan\n🪢 /roster - Duty roster\n👁️ /conflicts - Apollo vs Envision\n🌿 /health - Personal care\n📁 /vault - Vault health",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "help-text",
+      "name": "Help Text",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.3,
+      "position": [1400, 800]
+    },
+    {
+      "parameters": {
+        "url": "={{ $env.PANTHEON_SERVER_URL }}/api/nyx/status",
+        "method": "GET",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-Pantheon-Key",
+              "value": "={{ $env.PANTHEON_API_KEY }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "server-status",
+      "name": "Server Status",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [1400, 950]
+    },
+    {
+      "parameters": {
+        "url": "={{ $env.PANTHEON_SERVER_URL }}/api/nyx/agent/{{ $json.cmd_key }}",
+        "method": "POST",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-Pantheon-Key",
+              "value": "={{ $env.PANTHEON_API_KEY }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"synthesize\": true\n}",
+        "options": {}
+      },
+      "id": "command-agent",
+      "name": "Command Agent",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [1400, 1100]
+    },
+    {
+      "parameters": {
+        "dataType": "boolean",
+        "value1": "={{ $json.has_voice }}",
+        "rules": {
+          "rules": [
+            {
+              "value2": true
+            }
+          ]
+        },
+        "options": {
+          "fallbackOutput": 1
+        }
+      },
+      "id": "voice-router",
+      "name": "Voice Router",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3,
+      "position": [1000, 1000]
+    },
+    {
+      "parameters": {
+        "url": "={{ $env.PANTHEON_SERVER_URL }}/api/nyx/transcribe",
+        "method": "POST",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-Pantheon-Key",
+              "value": "={{ $env.PANTHEON_API_KEY }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"file_id\": \"{{ $json.voice_file_id }}\"\n}",
+        "options": {}
+      },
+      "id": "transcribe-request",
+      "name": "Transcribe Request",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [1200, 1250]
+    },
+    {
+      "parameters": {
+        "jsCode": "return [{\n  json: {\n    ...$node[\"Extract & Auth\"].json,\n    message_text: $input.item.json.transcription,\n    is_voice_reply: true\n  }\n}];"
+      },
+      "id": "set-transcription",
+      "name": "Set Transcription",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1400, 1250]
+    },
+    {
+      "parameters": {
+        "url": "={{ $env.PANTHEON_SERVER_URL }}/api/intelligence/query",
+        "method": "POST",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-Pantheon-Key",
+              "value": "={{ $env.PANTHEON_API_KEY }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"prompt\": \"[TELEGRAM TRIAGE] VPK sent: \\\"{{ $json.text || $json.message_text }}\\\"\\n\\nContext:\\n- Voice: {{ $json.has_voice }}\\n- Photo: {{ $json.has_photo }}\\n\\nDetermine intent and execute necessary Pantheon tools. Synthesize result for him.\",\n  \"model\": \"groq\"\n}",
+        "options": {}
+      },
+      "id": "nyx-brain",
+      "name": "NYX Brain",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [1600, 1000]
+    },
+    {
+      "parameters": {
+        "url": "=https://api.telegram.org/bot{{ $env.TELEGRAM_BOT_TOKEN }}/sendMessage",
+        "method": "POST",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"chat_id\": \"{{ $env.USER_CHAT_ID }}\",\n  \"text\": \"{{ $json.response || $json.stdout || $input.item.json.response }}\",\n  \"parse_mode\": \"Markdown\",\n  \"reply_to_message_id\": \"{{ $node[\\\"Extract & Auth\\\"].json.message_id }}\"\n}",
+        "options": {}
+      },
+      "id": "send-reply",
+      "name": "Send Reply",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [2000, 600]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={ \"ok\": true }",
+        "options": {}
+      },
+      "id": "respond-ok",
+      "name": "Respond OK",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [2200, 600]
+    }
+  ],
+  "connections": {
+    "Telegram Webhook": {
+      "main": [[{ "node": "Extract & Auth", "type": "main", "index": 0 }]]
+    },
+    "Extract & Auth": {
+      "main": [[{ "node": "Check Auth", "type": "main", "index": 0 }]]
+    },
+    "Check Auth": {
+      "main": [[{ "node": "Is Callback?", "type": "main", "index": 0 }]]
+    },
+    "Is Callback?": {
+      "main": [
+        [{ "node": "Ack Callback", "type": "main", "index": 0 }],
+        [{ "node": "Is Command?", "type": "main", "index": 0 }]
+      ]
+    },
+    "Ack Callback": {
+      "main": [[{ "node": "Parse Callback", "type": "main", "index": 0 }]]
+    },
+    "Parse Callback": {
+      "main": [[{ "node": "Callback Router", "type": "main", "index": 0 }]]
+    },
+    "Callback Router": {
+      "main": [
+        [{ "node": "Trigger Agent", "type": "main", "index": 0 }],
+        [{ "node": "Task Action", "type": "main", "index": 0 }],
+        [{ "node": "Log Action", "type": "main", "index": 0 }],
+        [{ "node": "View Action", "type": "main", "index": 0 }]
+      ]
+    },
+    "Trigger Agent": {
+      "main": [[{ "node": "Send Reply", "type": "main", "index": 0 }]]
+    },
+    "Task Action": {
+      "main": [[{ "node": "Send Reply", "type": "main", "index": 0 }]]
+    },
+    "Log Action": {
+      "main": [[{ "node": "Send Reply", "type": "main", "index": 0 }]]
+    },
+    "View Action": {
+      "main": [[{ "node": "Send Reply", "type": "main", "index": 0 }]]
+    },
+    "Is Command?": {
+      "main": [
+        [{ "node": "Parse Command", "type": "main", "index": 0 }],
+        [{ "node": "Voice Router", "type": "main", "index": 0 }]
+      ]
+    },
+    "Parse Command": {
+      "main": [[{ "node": "Command Router", "type": "main", "index": 0 }]]
+    },
+    "Command Router": {
+      "main": [
+        [{ "node": "Help Text", "type": "main", "index": 0 }],
+        [{ "node": "Server Status", "type": "main", "index": 0 }],
+        [{ "node": "Command Agent", "type": "main", "index": 0 }]
+      ]
+    },
+    "Help Text": {
+      "main": [[{ "node": "Send Reply", "type": "main", "index": 0 }]]
+    },
+    "Server Status": {
+      "main": [[{ "node": "Send Reply", "type": "main", "index": 0 }]]
+    },
+    "Command Agent": {
+      "main": [[{ "node": "Send Reply", "type": "main", "index": 0 }]]
+    },
+    "Voice Router": {
+      "main": [
+        [{ "node": "Transcribe Request", "type": "main", "index": 0 }],
+        [{ "node": "NYX Brain", "type": "main", "index": 0 }]
+      ]
+    },
+    "Transcribe Request": {
+      "main": [[{ "node": "Set Transcription", "type": "main", "index": 0 }]]
+    },
+    "Set Transcription": {
+      "main": [[{ "node": "NYX Brain", "type": "main", "index": 0 }]]
+    },
+    "NYX Brain": {
+      "main": [[{ "node": "Send Reply", "type": "main", "index": 0 }]]
+    },
+    "Send Reply": {
+      "main": [[{ "node": "Respond OK", "type": "main", "index": 0 }]]
+    }
+  }
+}

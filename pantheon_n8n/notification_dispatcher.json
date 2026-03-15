@@ -1,0 +1,132 @@
+{
+  "name": "Pantheon: Smart Notification Dispatcher",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": "={{$now.setZone('Asia/Kolkata').hour === 6 || ($now.setZone('Asia/Kolkata').hour === 21 && $now.setZone('Asia/Kolkata').minute >= 30)}}"
+      },
+      "id": "time-window-check",
+      "name": "Is Dispatch Window?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [600, 300]
+    },
+    {
+      "parameters": {
+        "url": "http://141.148.210.250:3000/api/nyx/queue",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-Pantheon-Key",
+              "value": "65f7a184488e0bccaa23dd83ff114ac9fc7815c834b3e29ab717ba79f7537863"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "fetch-queue",
+      "name": "Fetch Pending Messages",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [850, 200]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "number": [
+            {
+              "value1": "={{$json.priority}}",
+              "operation": "equal"
+            }
+          ]
+        }
+      },
+      "id": "p0-check",
+      "name": "Is P0 (Critical)?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [400, 300]
+    },
+    {
+      "parameters": {
+        "fieldToSplit": "data",
+        "options": {}
+      },
+      "id": "split-messages",
+      "name": "Split Out Messages",
+      "type": "n8n-nodes-base.itemLists",
+      "typeVersion": 3,
+      "position": [1050, 200]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://141.148.210.250:3000/api/nyx/dispatch",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-Pantheon-Key",
+              "value": "65f7a184488e0bccaa23dd83ff114ac9fc7815c834b3e29ab717ba79f7537863"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "force",
+              "value": "true"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "trigger-dispatch",
+      "name": "Execute Dispatch",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [1250, 250]
+    }
+  ],
+  "connections": {
+    "Is Dispatch Window?": {
+      "main": [
+        [
+          {
+            "node": "Fetch Pending Messages",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch Pending Messages": {
+      "main": [
+        [
+          {
+            "node": "Split Out Messages",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out Messages": {
+      "main": [
+        [
+          {
+            "node": "Execute Dispatch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null
+}

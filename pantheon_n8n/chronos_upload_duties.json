@@ -1,0 +1,60 @@
+{
+  "name": "Chronos: Upload Duties to GCal",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "chronos-upload-duty",
+        "options": {}
+      },
+      "id": "webhook-trigger",
+      "name": "Webhook Trigger",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [400, 300]
+    },
+    {
+      "parameters": {
+        "calendar": {
+          "__rl": true,
+          "value": "5raik3r0d6sf2fsomr6qvf0t9k@group.calendar.google.com",
+          "mode": "list"
+        },
+        "start": "={{$json.body.start}}",
+        "end": "={{$json.body.end}}",
+        "summary": "={{$json.body.summary}}",
+        "description": "={{$json.body.description}}",
+        "additionalFields": {
+          "timeZone": "Asia/Kolkata"
+        }
+      },
+      "id": "create-event",
+      "name": "Create Duty Event",
+      "type": "n8n-nodes-base.googleCalendar",
+      "typeVersion": 1.1,
+      "position": [620, 300],
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "2ByJkbavZW4PC5xh"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Webhook Trigger": {
+      "main": [
+        [
+          {
+            "node": "create-event",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null
+}

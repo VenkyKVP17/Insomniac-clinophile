@@ -1,0 +1,133 @@
+{
+  "name": "Pantheon: Master Triage (Telegram)",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "nyx-master-inbound",
+        "options": {}
+      },
+      "id": "telegram-trigger",
+      "name": "Telegram Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [400, 300]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "boolean": [
+            {
+              "value1": "={{!!$json.body.callback_query}}",
+              "value2": true
+            }
+          ]
+        }
+      },
+      "id": "callback-check",
+      "name": "Is Button Click?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [620, 300]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://141.148.210.250:3000/api/intelligence/query",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-Pantheon-Key",
+              "value": "65f7a184488e0bccaa23dd83ff114ac9fc7815c834b3e29ab717ba79f7537863"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "prompt",
+              "value": "=[TELEGRAM TRIAGE] VPK sent: \"{{$json.body.message.text || $json.body.message.caption || '[Media]'}}\". \n\nContext:\n- Voice: {{!!$json.body.message.voice}}\n- Photo: {{!!$json.body.message.photo}}\n\nDetermine intent and execute necessary Pantheon tools. Synthesize result for him."
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "cli-brain",
+      "name": "Gemini CLI Brain",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [850, 450]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{'https://api.telegram.org/bot8060661071:AAGAPZg7HJcQod7mjh3Sx4NnMga9d9hDGrA/sendMessage'}}",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "chat_id",
+              "value": "5754657595"
+            },
+            {
+              "name": "text",
+              "value": "={{$node[\"Gemini CLI Brain\"].json.response}}"
+            },
+            {
+              "name": "parse_mode",
+              "value": "Markdown"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "reply-telegram",
+      "name": "Send Reply",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [1080, 450]
+    }
+  ],
+  "connections": {
+    "Telegram Webhook": {
+      "main": [
+        [
+          {
+            "node": "callback-check",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "callback-check": {
+      "main": [
+        null,
+        [
+          {
+            "node": "cli-brain",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "cli-brain": {
+      "main": [
+        [
+          {
+            "node": "reply-telegram",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null
+}

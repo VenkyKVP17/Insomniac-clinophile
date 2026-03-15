@@ -1,0 +1,166 @@
+{
+  "name": "Iris: Clinical Photo Sync",
+  "nodes": [
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "resource": "album",
+        "operation": "get",
+        "albumId": "={{$node[\"Find Clinical Album\"].json[\"id\"]}}",
+        "options": {}
+      },
+      "id": "watch-photos",
+      "name": "Watch Google Photos",
+      "type": "n8n-nodes-base.googlePhotos",
+      "typeVersion": 1,
+      "position": [600, 300],
+      "credentials": {
+        "googlePhotosOAuth2Api": {
+          "id": "2ByJkbavZW4PC5xh"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "returnAll": true,
+        "filters": {}
+      },
+      "id": "list-albums",
+      "name": "Find Clinical Album",
+      "type": "n8n-nodes-base.googlePhotos",
+      "typeVersion": 1,
+      "position": [380, 300],
+      "credentials": {
+        "googlePhotosOAuth2Api": {
+          "id": "2ByJkbavZW4PC5xh"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{$json.title}}",
+              "operation": "equal",
+              "value2": "Clinical"
+            }
+          ]
+        }
+      },
+      "id": "filter-clinical",
+      "name": "Is 'Clinical'?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [580, 100]
+    },
+    {
+      "parameters": {
+        "resource": "mediaItem",
+        "operation": "search",
+        "albumId": "={{$json.id}}",
+        "returnAll": true,
+        "options": {}
+      },
+      "id": "get-items",
+      "name": "Get Album Items",
+      "type": "n8n-nodes-base.googlePhotos",
+      "typeVersion": 1,
+      "position": [800, 100],
+      "credentials": {
+        "googlePhotosOAuth2Api": {
+          "id": "2ByJkbavZW4PC5xh"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://141.148.210.250:3000/api/nyx/save-media",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-Pantheon-Key",
+              "value": "65f7a184488e0bccaa23dd83ff114ac9fc7815c834b3e29ab717ba79f7537863"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "url",
+              "value": "={{$json.baseUrl + '=d'}}"
+            },
+            {
+              "name": "filename",
+              "value": "={{$json.filename}}"
+            },
+            {
+              "name": "id",
+              "value": "={{$json.id}}"
+            },
+            {
+              "name": "target_dir",
+              "value": "14-Scanned_Case_Sheets"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "save-to-vault",
+      "name": "Save to Vault",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [1020, 100]
+    }
+  ],
+  "connections": {
+    "Find Clinical Album": {
+      "main": [
+        [
+          {
+            "node": "filter-clinical",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "filter-clinical": {
+      "main": [
+        [
+          {
+            "node": "get-items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get-items": {
+      "main": [
+        [
+          {
+            "node": "save-to-vault",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null
+}

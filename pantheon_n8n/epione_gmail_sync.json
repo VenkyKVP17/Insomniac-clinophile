@@ -1,0 +1,77 @@
+{
+  "name": "Epione: Clinical Gmail Sync",
+  "nodes": [
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "filters": {
+          "readStatus": "unread"
+        },
+        "options": {}
+      },
+      "id": "watch-gmail",
+      "name": "Watch Gmail",
+      "type": "n8n-nodes-base.gmailTrigger",
+      "typeVersion": 1,
+      "position": [400, 300],
+      "credentials": {
+        "gmailOAuth2Api": {
+          "id": "2ByJkbavZW4PC5xh"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://141.148.210.250:3000/api/intelligence/query",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-Pantheon-Key",
+              "value": "65f7a184488e0bccaa23dd83ff114ac9fc7815c834b3e29ab717ba79f7537863"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "prompt",
+              "value": "=New email from: {{$json.from.value[0].name}} ({{$json.from.value[0].address}}). Subject: {{$json.subject}}. Snippet: {{$json.snippet}}. Triage this for VPK. If it is a hospital circular or clinical report, save it to the vault and alert him."
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "triage-email",
+      "name": "Triage with NYX",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [620, 300]
+    }
+  ],
+  "connections": {
+    "Watch Gmail": {
+      "main": [
+        [
+          {
+            "node": "triage-email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null
+}

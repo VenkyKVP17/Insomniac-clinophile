@@ -1,0 +1,80 @@
+{
+  "name": "Chronos: Sync GCal to Vault",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "chronos-fetch-calendar",
+        "options": {}
+      },
+      "id": "webhook-trigger",
+      "name": "Webhook Trigger",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [400, 300]
+    },
+    {
+      "parameters": {
+        "calendar": {
+          "__rl": true,
+          "value": "primary",
+          "mode": "list"
+        },
+        "returnAll": true,
+        "filters": {
+          "timeMin": "={{$now.toISO()}}",
+          "timeMax": "={{$now.plus({days: 7}).toISO()}}"
+        },
+        "options": {}
+      },
+      "id": "get-events",
+      "name": "Get GCal Events",
+      "type": "n8n-nodes-base.googleCalendar",
+      "typeVersion": 1.1,
+      "position": [620, 300],
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "2ByJkbavZW4PC5xh"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "return items.map(item => ({\n  json: {\n    id: item.json.id,\n    summary: item.json.summary,\n    start: item.json.start.dateTime || item.json.start.date,\n    end: item.json.end.dateTime || item.json.end.date,\n    description: item.json.description || \"\"\n  }\n}));"
+      },
+      "id": "format-events",
+      "name": "Format Events",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [840, 300]
+    }
+  ],
+  "connections": {
+    "Webhook Trigger": {
+      "main": [
+        [
+          {
+            "node": "get-events",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get-events": {
+      "main": [
+        [
+          {
+            "node": "format-events",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null
+}

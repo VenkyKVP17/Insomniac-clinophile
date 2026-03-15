@@ -1,0 +1,53 @@
+{
+  "name": "Chronos: Fetch Google Tasks",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "chronos-fetch-tasks",
+        "options": {}
+      },
+      "id": "webhook-trigger",
+      "name": "Webhook Trigger",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [400, 300]
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "limit": 50,
+        "options": {
+          "showCompleted": false
+        }
+      },
+      "id": "get-tasks",
+      "name": "Get Tasks",
+      "type": "n8n-nodes-base.googleTasks",
+      "typeVersion": 1,
+      "position": [620, 300],
+      "credentials": {
+        "googleTasksOAuth2Api": {
+          "id": "2ByJkbavZW4PC5xh"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Webhook Trigger": {
+      "main": [
+        [
+          {
+            "node": "get-tasks",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null
+}

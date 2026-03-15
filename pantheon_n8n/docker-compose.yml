@@ -1,0 +1,52 @@
+services:
+  n8n:
+    image: n8nio/n8n:latest
+    container_name: pantheon_n8n
+    restart: unless-stopped
+    ports:
+      - "5678:5678"
+    environment:
+      # n8n Configuration
+      - N8N_PORT=5678
+      - N8N_PROTOCOL=https
+      - NODE_ENV=production
+      - WEBHOOK_URL=https://n8n-nyx.katthan.online/
+      - GENERIC_TIMEZONE=Asia/Kolkata
+      - N8N_METRICS=true
+      - N8N_LOG_LEVEL=info
+      - N8N_LOG_OUTPUT=console,file
+      - N8N_PROXY_HOPS=1
+      - N8N_ENFORCE_SETTINGS_FILE_PERMISSIONS=false
+      - EXECUTIONS_DATA_SAVE_ON_SUCCESS=all
+      - EXECUTIONS_DATA_SAVE_ON_ERROR=all
+      - EXECUTIONS_DATA_SAVE_MANUAL_EXECUTIONS=true
+
+      # Pantheon Integration - From .env
+      - TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN}
+      - USER_CHAT_ID=${USER_CHAT_ID}
+      - PANTHEON_API_KEY=${PANTHEON_API_KEY}
+      - VAULT_PATH=/home/ubuntu/vp
+      - GITHUB_WEBHOOK_SECRET=${GITHUB_WEBHOOK_SECRET}
+      - GROQ_API=${GROQ_API_KEY}
+      - TELEGRAM_WEBHOOK_SECRET=${TELEGRAM_WEBHOOK_SECRET}
+      - GOOGLE_AI_API_KEY=${GOOGLE_AI_API_KEY}
+
+      # Pantheon Server URL
+      - PANTHEON_SERVER_URL=http://141.148.210.250:3000
+
+      # Database Paths (mounted via volumes)
+      - PANTHEON_DB_PATH=/pantheon-data/pantheon.db
+      - PANTHEON_VECTORS_DB_PATH=/pantheon-data/pantheon_vectors.db
+
+    volumes:
+      # n8n data directory
+      - /home/ubuntu/pantheon_n8n/data:/home/node/.n8n
+
+      # Pantheon vault (read-write for git operations)
+      - /home/ubuntu/vp:/vault:rw
+
+      # Pantheon databases (read-write)
+      - /home/ubuntu/vp/05-Development/pantheon-server/data:/pantheon-data:rw
+
+      # Pantheon scripts (read-only for execution)
+      - /home/ubuntu/vp/.scripts:/scripts:ro

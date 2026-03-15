@@ -1,0 +1,89 @@
+╔════════════════════════════════════════════════════════════════╗
+║  🏛️ PANTHEON N8N - CLEAN START                                 ║
+╚════════════════════════════════════════════════════════════════╝
+
+STATUS: ✅ Ready to import (compatible with your n8n version)
+
+┌────────────────────────────────────────────────────────────────┐
+│ IMPORT THESE 2 FILES ONLY:                                    │
+└────────────────────────────────────────────────────────────────┘
+
+1. IMPORT_THIS_telegram.json  ← Telegram Bot (3 nodes, simple)
+2. IMPORT_THIS_github.json     ← GitHub Sync (4 nodes, simple)
+
+┌────────────────────────────────────────────────────────────────┐
+│ HOW TO IMPORT:                                                 │
+└────────────────────────────────────────────────────────────────┘
+
+1. Open: https://n8n-nyx.katthan.online
+
+2. Click: "+" → "Import from file"
+
+3. Upload: IMPORT_THIS_telegram.json
+
+4. Click: "Save" then toggle "Active" ON
+
+5. Repeat for: IMPORT_THIS_github.json
+
+┌────────────────────────────────────────────────────────────────┐
+│ OPTIONAL: DELETE OLD WORKFLOWS                                │
+└────────────────────────────────────────────────────────────────┘
+
+If you want to clean up, DELETE these in n8n UI:
+  - "Pantheon Master Agent (Gemini Pro)"
+  - "Pantheon Master Agent (Local CLI Brain)"
+  - "Pantheon: Master Triage (Telegram)"
+
+KEEP these (they work):
+  - Chronos workflows (3)
+  - IRIS, HERMES, Health Watcher, Location Engine
+
+┌────────────────────────────────────────────────────────────────┐
+│ WHAT'S DIFFERENT:                                              │
+└────────────────────────────────────────────────────────────────┘
+
+Old complex workflows had issues because:
+  - Used newer n8n node types (typeVersion 2, 3)
+  - Used nodes your n8n version doesn't have
+  - Too many disconnected nodes
+
+New simple workflows:
+  ✅ Match your n8n version (typeVersion 1)
+  ✅ Use only "function" and "httpRequest" nodes
+  ✅ All nodes connected in sequence
+  ✅ Tested format (matches your working workflows)
+
+┌────────────────────────────────────────────────────────────────┐
+│ TEST IT:                                                       │
+└────────────────────────────────────────────────────────────────┘
+
+After importing:
+
+1. Send to Telegram bot: "test"
+   Expected: NYX responds with AI reply
+
+2. Push to GitHub vault repo
+   Expected: Telegram message "X files changed"
+
+╔════════════════════════════════════════════════════════════════╗
+║  FILES IN THIS FOLDER:                                         ║
+╠════════════════════════════════════════════════════════════════╣
+║                                                                ║
+║  IMPORT THESE:                                                 ║
+║  ✅ IMPORT_THIS_telegram.json  (3 nodes)                      ║
+║  ✅ IMPORT_THIS_github.json    (4 nodes)                      ║
+║                                                                ║
+║  IGNORE THESE (broken/outdated):                              ║
+║  ❌ pantheon_telegram_master.json (wrong version)             ║
+║  ❌ pantheon_github_sync.json (wrong version)                 ║
+║  ❌ pantheon_*_FIXED.json (oversimplified, missing nodes)     ║
+║                                                                ║
+║  KEEP THESE (working):                                         ║
+║  ✅ chronos_*.json                                             ║
+║  ✅ iris_sync.json                                             ║
+║  ✅ hermes_contacts_sync.json                                  ║
+║  ✅ master_agent_upgraded.json (currently working)             ║
+║                                                                ║
+╚════════════════════════════════════════════════════════════════╝
+
+Done! Just import the 2 "IMPORT_THIS" files and you're good.

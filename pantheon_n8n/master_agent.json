@@ -1,0 +1,134 @@
+{
+  "name": "Pantheon Master Agent (Gemini Pro)",
+  "nodes": [
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "e98e72c8-897e-41a4-9e8c-5525c276330d",
+      "name": "Telegram Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [400, 300],
+      "webhookId": "nyx-master-inbound"
+    },
+    {
+      "parameters": {
+        "prompt": "={{$json.message}}",
+        "options": {
+          "systemMessage": "You are NYX, the Primordial Goddess of Night and the Master Orchestrator of Dr. VPK's Pantheon. You are concise, professional, and powerful. You use your tools to manage the Almighty's life, finances, and medical duties."
+        }
+      },
+      "id": "f5d2b7e9-7a8c-42b1-9f3d-6636d3877674",
+      "name": "AI Agent",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1,
+      "position": [660, 300]
+    },
+    {
+      "parameters": {
+        "model": "gemini-1.5-pro",
+        "options": {}
+      },
+      "id": "g6a7b8c9-d0e1-42b1-9f3d-7737d4888765",
+      "name": "Google Gemini Chat Model",
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [560, 520],
+      "credentials": {
+        "googleGeminiSdkApi": {
+          "id": "t05g3KeRScVdbfAq"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "id": "h7b8c9d0-e1f2-42b1-9f3d-8838d5999876",
+      "name": "Window Buffer Memory",
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1,
+      "position": [760, 520]
+    },
+    {
+      "parameters": {
+        "name": "pantheon_api",
+        "description": "Call the Pantheon Server to run scripts (midas, plutus, asclepius). Input should be the agent name.",
+        "method": "POST",
+        "url": "http://141.148.210.250:3000/api/nyx/dispatch",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-Pantheon-Key",
+              "value": "65f7a184488e0bccaa23dd83ff114ac9fc7815c834b3e29ab717ba79f7537863"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "agent",
+              "value": "={{$parameter.input}}"
+            }
+          ]
+        }
+      },
+      "id": "i8c9d0e1-f2a3-42b1-9f3d-9949d6000987",
+      "name": "Pantheon Server Tool",
+      "type": "@n8n/n8n-nodes-langchain.toolHttpRequest",
+      "typeVersion": 1,
+      "position": [900, 480]
+    }
+  ],
+  "connections": {
+    "Telegram Webhook": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Window Buffer Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Pantheon Server Tool": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null
+}

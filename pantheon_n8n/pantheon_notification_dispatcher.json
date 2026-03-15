@@ -1,0 +1,107 @@
+{
+  "name": "Pantheon: Notification Dispatcher v2",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "minutes",
+              "minutesInterval": 15
+            }
+          ]
+        }
+      },
+      "id": "schedule-trigger",
+      "name": "Every 15 Mins",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.1,
+      "position": [250, 300]
+    },
+    {
+      "parameters": {
+        "command": "cat /pantheon-data/nyx_queue.json"
+      },
+      "id": "read-queue",
+      "name": "Read Queue",
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [450, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "const data = JSON.parse($input.item.json.stdout || '[]');\nconst pending = data.filter(m => !m.sent_at);\n\nif (pending.length === 0) return [];\n\n// Group by priority\n// 0 = Critical (immediate batch logic - or maybe we just send daily digest for all > 0)\nconst highPriority = pending.filter(m => m.priority <= 1);\nconst normalPriority = pending.filter(m => m.priority > 1);\n\n// For now, let's just batch EVERYTHING into a digest if it's the scheduled time (6am or 9:30pm)\n// OR if there are critical messages, send them now.\n\nconst now = new Date();\nconst hour = now.getHours();\nconst minute = now.getMinutes();\n\nconst isDigestTime = (hour === 6 && minute < 15) || (hour === 21 && minute > 25 && minute < 45);\n\nif (!isDigestTime && highPriority.length === 0) {\n  return []; // Nothing to send right now\n}\n\nreturn [{\n  json: {\n    messages: pending,\n    ids: pending.map(m => m.id)\n  }\n}];"
+      },
+      "id": "batch-logic",
+      "name": "Batch Logic",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [650, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "const messages = $input.item.json.messages;\nconst digest = messages.map(m => {\n  const emoji = m.priority === 0 ? '🚨' : (m.priority === 1 ? '⚠️' : 'ℹ️');\n  return `${emoji} *[${m.pa_name}]* ${m.message}`;\n}).join('\\n\\n');\n\nreturn [{\n  json: {\n    text: `🔔 *NYX Digest*\\n\\n${digest}`\n  }\n}];"
+      },
+      "id": "format-digest",
+      "name": "Format Digest",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [850, 300]
+    },
+    {
+      "parameters": {
+        "url": "=https://api.telegram.org/bot{{ $env.TELEGRAM_BOT_TOKEN }}/sendMessage",
+        "method": "POST",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"chat_id\": \"{{ $env.USER_CHAT_ID }}\",\n  \"text\": \"{{ $json.text }}\",\n  \"parse_mode\": \"Markdown\"\n}",
+        "options": {}
+      },
+      "id": "send-digest",
+      "name": "Send Digest",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [1050, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "const ids = $node[\"Batch Logic\"].json.ids;\nreturn [{\n  json: {\n    command: `node -e 'const fs = require(\"fs\"); const f = \"/pantheon-data/nyx_queue.json\"; const d = JSON.parse(fs.readFileSync(f)); const ids = ${JSON.stringify(ids)}; const updated = d.map(m => ids.includes(m.id) ? {...m, sent_at: new Date().toISOString()} : m); fs.writeFileSync(f, JSON.stringify(updated, null, 2));'`\n  }\n}];"
+      },
+      "id": "mark-sent-cmd",
+      "name": "Mark Sent Cmd",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1250, 300]
+    },
+    {
+      "parameters": {
+        "command": "={{ $json.command }}"
+      },
+      "id": "execute-mark-sent",
+      "name": "Mark Sent",
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [1450, 300]
+    }
+  ],
+  "connections": {
+    "Every 15 Mins": {
+      "main": [[{ "node": "Read Queue", "type": "main", "index": 0 }]]
+    },
+    "Read Queue": {
+      "main": [[{ "node": "Batch Logic", "type": "main", "index": 0 }]]
+    },
+    "Batch Logic": {
+      "main": [[{ "node": "Format Digest", "type": "main", "index": 0 }]]
+    },
+    "Format Digest": {
+      "main": [[{ "node": "Send Digest", "type": "main", "index": 0 }]]
+    },
+    "Send Digest": {
+      "main": [[{ "node": "Mark Sent Cmd", "type": "main", "index": 0 }]]
+    },
+    "Mark Sent Cmd": {
+      "main": [[{ "node": "Mark Sent", "type": "main", "index": 0 }]]
+    }
+  }
+}

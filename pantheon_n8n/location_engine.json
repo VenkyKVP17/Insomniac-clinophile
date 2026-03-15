@@ -1,0 +1,104 @@
+{
+  "name": "Pantheon: Location Logic (Tasker)",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "nyx-location",
+        "options": {}
+      },
+      "id": "location-webhook",
+      "name": "Tasker Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [400, 300]
+    },
+    {
+      "parameters": {
+        "dataType": "string",
+        "value1": "={{$json.body.place_id}}",
+        "rules": {
+          "rules": [
+            {
+              "value2": "apollo"
+            },
+            {
+              "value2": "envision",
+              "output": 1
+            }
+          ]
+        }
+      },
+      "id": "place-switch",
+      "name": "Which Place?",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 1,
+      "position": [620, 300]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://141.148.210.250:3000/api/intelligence/query",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-Pantheon-Key",
+              "value": "65f7a184488e0bccaa23dd83ff114ac9fc7815c834b3e29ab717ba79f7537863"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "prompt",
+              "value": "=VPK has just {{$json.body.event}}ed {{$json.body.place_id}}. Generate a professional greeting and tell him his next task."
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "generate-briefing",
+      "name": "Get NYX Briefing",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [850, 300]
+    }
+  ],
+  "connections": {
+    "Tasker Webhook": {
+      "main": [
+        [
+          {
+            "node": "Which Place?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Which Place?": {
+      "main": [
+        [
+          {
+            "node": "generate-briefing",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "generate-briefing",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null
+}

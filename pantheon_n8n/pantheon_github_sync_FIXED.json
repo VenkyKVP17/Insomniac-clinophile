@@ -1,0 +1,139 @@
+{
+  "name": "Pantheon: GitHub Vault Sync",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "pantheon-github-sync",
+        "options": {
+          "responseMode": "lastNode"
+        }
+      },
+      "id": "github-webhook",
+      "name": "GitHub Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [250, 300],
+      "webhookId": "pantheon-github-sync"
+    },
+    {
+      "parameters": {
+        "command": "cd /vault && git pull origin main"
+      },
+      "id": "git-pull",
+      "name": "Git Pull Vault",
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [450, 300]
+    },
+    {
+      "parameters": {
+        "command": "cd /vault && git diff HEAD@{1} HEAD --name-only"
+      },
+      "id": "git-diff",
+      "name": "Get Changed Files",
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [650, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "const output = $input.item.json.stdout || '';\nconst files = output.split('\\n').filter(f => f.trim());\n\nconst categorized = {\n  tasks: files.filter(f => f.includes('06-Tasks/')),\n  notes: files.filter(f => f.includes('07-Daily_Notes/')),\n  projects: files.filter(f => f.includes('03-Projects/')),\n  finance: files.filter(f => f.includes('04-Finance/')),\n  learning: files.filter(f => f.includes('01-Learning/')),\n  agents: files.filter(f => f.includes('09-Assistants/')),\n};\n\nreturn [{\n  json: {\n    total_files: files.length,\n    all_files: files,\n    categorized: categorized,\n    has_changes: files.length > 0\n  }\n}];"
+      },
+      "id": "categorize-files",
+      "name": "Categorize Changed Files",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [850, 300]
+    },
+    {
+      "parameters": {
+        "url": "=https://api.telegram.org/bot{{ $env.TELEGRAM_BOT_TOKEN }}/sendMessage",
+        "method": "POST",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"chat_id\": \"{{ $env.USER_CHAT_ID }}\",\n  \"text\": \"📂 *[VAULT SYNC]* {{ $json.total_files }} files changed\\n\\nTasks: {{ $json.categorized.tasks.length }}\\nNotes: {{ $json.categorized.notes.length }}\\nProjects: {{ $json.categorized.projects.length }}\",\n  \"parse_mode\": \"Markdown\"\n}",
+        "options": {}
+      },
+      "id": "notify-telegram",
+      "name": "Notify via Telegram",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [1050, 300]
+    },
+    {
+      "parameters": {
+        "respondWith": "text",
+        "responseBody": "=OK",
+        "options": {}
+      },
+      "id": "respond-ok",
+      "name": "Respond OK",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [1250, 300]
+    }
+  ],
+  "connections": {
+    "GitHub Webhook": {
+      "main": [
+        [
+          {
+            "node": "Git Pull Vault",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Git Pull Vault": {
+      "main": [
+        [
+          {
+            "node": "Get Changed Files",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Changed Files": {
+      "main": [
+        [
+          {
+            "node": "Categorize Changed Files",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Categorize Changed Files": {
+      "main": [
+        [
+          {
+            "node": "Notify via Telegram",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Notify via Telegram": {
+      "main": [
+        [
+          {
+            "node": "Respond OK",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {},
+  "staticData": null,
+  "tags": [],
+  "pinData": {},
+  "versionId": ""
+}

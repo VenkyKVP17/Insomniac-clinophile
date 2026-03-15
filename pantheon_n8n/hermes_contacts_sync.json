@@ -1,0 +1,98 @@
+{
+  "name": "Hermes: Google Contacts Sync",
+  "nodes": [
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyHour"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "watch-contacts",
+      "name": "Every Hour",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.1,
+      "position": [400, 300]
+    },
+    {
+      "parameters": {
+        "resource": "contact",
+        "operation": "getAll",
+        "returnAll": true,
+        "options": {}
+      },
+      "id": "get-contacts",
+      "name": "Get All Contacts",
+      "type": "n8n-nodes-base.googleContacts",
+      "typeVersion": 1,
+      "position": [620, 300],
+      "credentials": {
+        "googleContactsOAuth2Api": {
+          "id": "lVYoHEbUPLnZlLRX"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://141.148.210.250:3000/api/intelligence/query",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-Pantheon-Key",
+              "value": "65f7a184488e0bccaa23dd83ff114ac9fc7815c834b3e29ab717ba79f7537863"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "prompt",
+              "value": "=Synchronize these Google Contacts to my vault in 02-People/. Ensure the names and phone numbers are correctly formatted in markdown. Contacts: {{$json.all}}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "sync-contacts",
+      "name": "Sync to Vault",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [840, 300]
+    }
+  ],
+  "connections": {
+    "Every Hour": {
+      "main": [
+        [
+          {
+            "node": "get-contacts",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get-contacts": {
+      "main": [
+        [
+          {
+            "node": "sync-contacts",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null
+}
