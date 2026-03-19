@@ -1,0 +1,431 @@
+{
+  "workflows": [
+    {
+      "name": "Pantheon: Gmail to Memory",
+      "description": "Syncs Gmail messages to NYX memory every hour",
+      "nodes": [
+        {
+          "parameters": {
+            "rule": {
+              "interval": [
+                {
+                  "field": "hours",
+                  "hoursInterval": 1
+                }
+              ]
+            }
+          },
+          "id": "gmail-schedule",
+          "name": "Schedule Every Hour",
+          "type": "n8n-nodes-base.scheduleTrigger",
+          "typeVersion": 1.2,
+          "position": [240, 300]
+        },
+        {
+          "parameters": {
+            "operation": "getAll",
+            "returnAll": false,
+            "limit": 50,
+            "simple": false,
+            "options": {
+              "q": "newer_than:1h"
+            }
+          },
+          "id": "gmail-fetch",
+          "name": "Fetch Recent Emails",
+          "type": "n8n-nodes-base.gmail",
+          "typeVersion": 2.1,
+          "position": [460, 300],
+          "credentials": {
+            "gmailOAuth2": {
+              "id": "GMAIL_CREDENTIAL_ID",
+              "name": "Gmail OAuth2"
+            }
+          }
+        },
+        {
+          "parameters": {
+            "jsCode": "// Transform Gmail data to memory format\nconst items = [];\n\nfor (const item of $input.all()) {\n  const email = item.json;\n  \n  items.push({\n    timestamp: email.internalDate ? new Date(parseInt(email.internalDate)).toISOString() : new Date().toISOString(),\n    content: email.snippet || email.payload?.body?.data || '(no content)',\n    metadata: {\n      from: email.payload?.headers?.find(h => h.name === 'From')?.value || 'Unknown',\n      to: email.payload?.headers?.find(h => h.name === 'To')?.value || 'VPK',\n      subject: email.payload?.headers?.find(h => h.name === 'Subject')?.value || '(no subject)',\n      messageId: email.id,\n      threadId: email.threadId\n    }\n  });\n}\n\nreturn { type: 'email', items };"
+          },
+          "id": "gmail-transform",
+          "name": "Transform to Memory Format",
+          "type": "n8n-nodes-base.code",
+          "typeVersion": 2,
+          "position": [680, 300]
+        },
+        {
+          "parameters": {
+            "method": "POST",
+            "url": "http://141.148.210.250:3001/api/memory/ingest",
+            "sendHeaders": true,
+            "headerParameters": {
+              "parameters": [
+                {
+                  "name": "X-API-Key",
+                  "value": "={{ $env.PANTHEON_API_KEY }}"
+                },
+                {
+                  "name": "Content-Type",
+                  "value": "application/json"
+                }
+              ]
+            },
+            "sendBody": true,
+            "specifyBody": "json",
+            "jsonBody": "={{ JSON.stringify($json) }}",
+            "options": {}
+          },
+          "id": "gmail-ingest",
+          "name": "Ingest to Memory",
+          "type": "n8n-nodes-base.httpRequest",
+          "typeVersion": 4.2,
+          "position": [900, 300]
+        }
+      ],
+      "connections": {
+        "Schedule Every Hour": {
+          "main": [[{"node": "Fetch Recent Emails", "type": "main", "index": 0}]]
+        },
+        "Fetch Recent Emails": {
+          "main": [[{"node": "Transform to Memory Format", "type": "main", "index": 0}]]
+        },
+        "Transform to Memory Format": {
+          "main": [[{"node": "Ingest to Memory", "type": "main", "index": 0}]]
+        }
+      },
+      "settings": {
+        "executionOrder": "v1"
+      }
+    },
+    {
+      "name": "Pantheon: Calendar to Memory",
+      "description": "Syncs Google Calendar events to NYX memory every 2 hours",
+      "nodes": [
+        {
+          "parameters": {
+            "rule": {
+              "interval": [
+                {
+                  "field": "hours",
+                  "hoursInterval": 2
+                }
+              ]
+            }
+          },
+          "id": "cal-schedule",
+          "name": "Schedule Every 2 Hours",
+          "type": "n8n-nodes-base.scheduleTrigger",
+          "typeVersion": 1.2,
+          "position": [240, 300]
+        },
+        {
+          "parameters": {
+            "operation": "getAll",
+            "calendar": "primary",
+            "returnAll": false,
+            "limit": 100,
+            "options": {
+              "timeMin": "={{ $now.minus({hours: 2}).toISO() }}",
+              "timeMax": "={{ $now.plus({days: 7}).toISO() }}"
+            }
+          },
+          "id": "cal-fetch",
+          "name": "Fetch Calendar Events",
+          "type": "n8n-nodes-base.googleCalendar",
+          "typeVersion": 1.1,
+          "position": [460, 300],
+          "credentials": {
+            "googleCalendarOAuth2Api": {
+              "id": "GCAL_CREDENTIAL_ID",
+              "name": "Google Calendar OAuth2"
+            }
+          }
+        },
+        {
+          "parameters": {
+            "jsCode": "// Transform Calendar data to memory format\nconst items = [];\n\nfor (const item of $input.all()) {\n  const event = item.json;\n  \n  const startTime = event.start?.dateTime || event.start?.date;\n  const endTime = event.end?.dateTime || event.end?.date;\n  \n  const content = [\n    event.summary,\n    event.description ? `Description: ${event.description}` : '',\n    startTime ? `Start: ${startTime}` : '',\n    endTime ? `End: ${endTime}` : ''\n  ].filter(Boolean).join('\\n');\n  \n  items.push({\n    timestamp: startTime || new Date().toISOString(),\n    content,\n    metadata: {\n      title: event.summary || '(no title)',\n      location: event.location,\n      participants: event.attendees?.map(a => a.email) || [],\n      eventId: event.id,\n      status: event.status\n    }\n  });\n}\n\nreturn { type: 'calendar', items };"
+          },
+          "id": "cal-transform",
+          "name": "Transform to Memory Format",
+          "type": "n8n-nodes-base.code",
+          "typeVersion": 2,
+          "position": [680, 300]
+        },
+        {
+          "parameters": {
+            "method": "POST",
+            "url": "http://141.148.210.250:3001/api/memory/ingest",
+            "sendHeaders": true,
+            "headerParameters": {
+              "parameters": [
+                {
+                  "name": "X-API-Key",
+                  "value": "={{ $env.PANTHEON_API_KEY }}"
+                },
+                {
+                  "name": "Content-Type",
+                  "value": "application/json"
+                }
+              ]
+            },
+            "sendBody": true,
+            "specifyBody": "json",
+            "jsonBody": "={{ JSON.stringify($json) }}",
+            "options": {}
+          },
+          "id": "cal-ingest",
+          "name": "Ingest to Memory",
+          "type": "n8n-nodes-base.httpRequest",
+          "typeVersion": 4.2,
+          "position": [900, 300]
+        }
+      ],
+      "connections": {
+        "Schedule Every 2 Hours": {
+          "main": [[{"node": "Fetch Calendar Events", "type": "main", "index": 0}]]
+        },
+        "Fetch Calendar Events": {
+          "main": [[{"node": "Transform to Memory Format", "type": "main", "index": 0}]]
+        },
+        "Transform to Memory Format": {
+          "main": [[{"node": "Ingest to Memory", "type": "main", "index": 0}]]
+        }
+      },
+      "settings": {
+        "executionOrder": "v1"
+      }
+    },
+    {
+      "name": "Pantheon: Google Tasks to Memory",
+      "description": "Syncs Google Tasks to NYX memory every 3 hours",
+      "nodes": [
+        {
+          "parameters": {
+            "rule": {
+              "interval": [
+                {
+                  "field": "hours",
+                  "hoursInterval": 3
+                }
+              ]
+            }
+          },
+          "id": "task-schedule",
+          "name": "Schedule Every 3 Hours",
+          "type": "n8n-nodes-base.scheduleTrigger",
+          "typeVersion": 1.2,
+          "position": [240, 300]
+        },
+        {
+          "parameters": {
+            "operation": "getAll",
+            "taskListId": "@default",
+            "returnAll": true,
+            "options": {}
+          },
+          "id": "task-fetch",
+          "name": "Fetch Tasks",
+          "type": "n8n-nodes-base.googleTasks",
+          "typeVersion": 1,
+          "position": [460, 300],
+          "credentials": {
+            "googleTasksOAuth2Api": {
+              "id": "GTASKS_CREDENTIAL_ID",
+              "name": "Google Tasks OAuth2"
+            }
+          }
+        },
+        {
+          "parameters": {
+            "jsCode": "// Transform Tasks data to memory format\nconst items = [];\n\nfor (const item of $input.all()) {\n  const task = item.json;\n  \n  const content = [\n    task.title,\n    task.notes ? `Notes: ${task.notes}` : '',\n    task.due ? `Due: ${task.due}` : ''\n  ].filter(Boolean).join('\\n');\n  \n  items.push({\n    timestamp: task.updated || new Date().toISOString(),\n    content,\n    metadata: {\n      title: task.title || '(no title)',\n      priority: task.priority || 'normal',\n      due: task.due,\n      status: task.status,\n      taskId: task.id\n    }\n  });\n}\n\nreturn { type: 'task', items };"
+          },
+          "id": "task-transform",
+          "name": "Transform to Memory Format",
+          "type": "n8n-nodes-base.code",
+          "typeVersion": 2,
+          "position": [680, 300]
+        },
+        {
+          "parameters": {
+            "method": "POST",
+            "url": "http://141.148.210.250:3001/api/memory/ingest",
+            "sendHeaders": true,
+            "headerParameters": {
+              "parameters": [
+                {
+                  "name": "X-API-Key",
+                  "value": "={{ $env.PANTHEON_API_KEY }}"
+                },
+                {
+                  "name": "Content-Type",
+                  "value": "application/json"
+                }
+              ]
+            },
+            "sendBody": true,
+            "specifyBody": "json",
+            "jsonBody": "={{ JSON.stringify($json) }}",
+            "options": {}
+          },
+          "id": "task-ingest",
+          "name": "Ingest to Memory",
+          "type": "n8n-nodes-base.httpRequest",
+          "typeVersion": 4.2,
+          "position": [900, 300]
+        }
+      ],
+      "connections": {
+        "Schedule Every 3 Hours": {
+          "main": [[{"node": "Fetch Tasks", "type": "main", "index": 0}]]
+        },
+        "Fetch Tasks": {
+          "main": [[{"node": "Transform to Memory Format", "type": "main", "index": 0}]]
+        },
+        "Transform to Memory Format": {
+          "main": [[{"node": "Ingest to Memory", "type": "main", "index": 0}]]
+        }
+      },
+      "settings": {
+        "executionOrder": "v1"
+      }
+    },
+    {
+      "name": "Pantheon: Tasker SMS to Memory",
+      "description": "Receives SMS from Tasker webhook and saves to NYX memory",
+      "nodes": [
+        {
+          "parameters": {
+            "httpMethod": "POST",
+            "path": "tasker-sms",
+            "responseMode": "lastNode",
+            "options": {}
+          },
+          "id": "sms-webhook",
+          "name": "Tasker SMS Webhook",
+          "type": "n8n-nodes-base.webhook",
+          "typeVersion": 2,
+          "position": [240, 300],
+          "webhookId": "tasker-sms-webhook"
+        },
+        {
+          "parameters": {
+            "jsCode": "// Transform Tasker SMS data to memory format\nconst sms = $input.first().json;\n\nreturn {\n  type: 'sms',\n  items: [{\n    timestamp: sms.timestamp || new Date().toISOString(),\n    content: sms.body || sms.message || sms.text || '',\n    metadata: {\n      from: sms.from || sms.sender || 'Unknown',\n      to: sms.to || 'VPK',\n      phone: sms.number || sms.phone,\n      direction: sms.direction || 'incoming'\n    }\n  }]\n};"
+          },
+          "id": "sms-transform",
+          "name": "Transform to Memory Format",
+          "type": "n8n-nodes-base.code",
+          "typeVersion": 2,
+          "position": [460, 300]
+        },
+        {
+          "parameters": {
+            "method": "POST",
+            "url": "http://141.148.210.250:3001/api/memory/ingest",
+            "sendHeaders": true,
+            "headerParameters": {
+              "parameters": [
+                {
+                  "name": "X-API-Key",
+                  "value": "={{ $env.PANTHEON_API_KEY }}"
+                },
+                {
+                  "name": "Content-Type",
+                  "value": "application/json"
+                }
+              ]
+            },
+            "sendBody": true,
+            "specifyBody": "json",
+            "jsonBody": "={{ JSON.stringify($json) }}",
+            "options": {}
+          },
+          "id": "sms-ingest",
+          "name": "Ingest to Memory",
+          "type": "n8n-nodes-base.httpRequest",
+          "typeVersion": 4.2,
+          "position": [680, 300]
+        }
+      ],
+      "connections": {
+        "Tasker SMS Webhook": {
+          "main": [[{"node": "Transform to Memory Format", "type": "main", "index": 0}]]
+        },
+        "Transform to Memory Format": {
+          "main": [[{"node": "Ingest to Memory", "type": "main", "index": 0}]]
+        }
+      },
+      "settings": {
+        "executionOrder": "v1"
+      }
+    },
+    {
+      "name": "Pantheon: Telegram to Memory",
+      "description": "Archives all Telegram interactions to NYX memory (runs alongside the main bot)",
+      "nodes": [
+        {
+          "parameters": {
+            "httpMethod": "POST",
+            "path": "telegram-archive",
+            "responseMode": "lastNode",
+            "options": {}
+          },
+          "id": "tg-webhook",
+          "name": "Telegram Archive Webhook",
+          "type": "n8n-nodes-base.webhook",
+          "typeVersion": 2,
+          "position": [240, 300],
+          "webhookId": "telegram-archive-webhook"
+        },
+        {
+          "parameters": {
+            "jsCode": "// Transform Telegram data to memory format\nconst update = $input.first().json;\nconst message = update.message || update.edited_message;\n\nif (!message) {\n  return { type: 'telegram', items: [] };\n}\n\nreturn {\n  type: 'telegram',\n  items: [{\n    timestamp: new Date(message.date * 1000).toISOString(),\n    content: message.text || message.caption || '(media)',\n    metadata: {\n      from: message.from?.first_name || message.from?.username || 'Unknown',\n      chat_name: message.chat?.title || message.chat?.first_name || 'Private',\n      message_id: message.message_id,\n      chat_id: message.chat?.id\n    }\n  }]\n};"
+          },
+          "id": "tg-transform",
+          "name": "Transform to Memory Format",
+          "type": "n8n-nodes-base.code",
+          "typeVersion": 2,
+          "position": [460, 300]
+        },
+        {
+          "parameters": {
+            "method": "POST",
+            "url": "http://141.148.210.250:3001/api/memory/ingest",
+            "sendHeaders": true,
+            "headerParameters": {
+              "parameters": [
+                {
+                  "name": "X-API-Key",
+                  "value": "={{ $env.PANTHEON_API_KEY }}"
+                },
+                {
+                  "name": "Content-Type",
+                  "value": "application/json"
+                }
+              ]
+            },
+            "sendBody": true,
+            "specifyBody": "json",
+            "jsonBody": "={{ JSON.stringify($json) }}",
+            "options": {}
+          },
+          "id": "tg-ingest",
+          "name": "Ingest to Memory",
+          "type": "n8n-nodes-base.httpRequest",
+          "typeVersion": 4.2,
+          "position": [680, 300]
+        }
+      ],
+      "connections": {
+        "Telegram Archive Webhook": {
+          "main": [[{"node": "Transform to Memory Format", "type": "main", "index": 0}]]
+        },
+        "Transform to Memory Format": {
+          "main": [[{"node": "Ingest to Memory", "type": "main", "index": 0}]]
+        }
+      },
+      "settings": {
+        "executionOrder": "v1"
+      }
+    }
+  ]
+}

@@ -1,0 +1,126 @@
+{
+  "name": "Pantheon: Gmail to Memory",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "hours",
+              "hoursInterval": 1
+            }
+          ]
+        }
+      },
+      "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+      "name": "Schedule Every Hour",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [240, 300]
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "returnAll": false,
+        "limit": 50,
+        "simple": false,
+        "options": {
+          "q": "newer_than:1h"
+        }
+      },
+      "id": "b2c3d4e5-f6a7-8901-bcde-f12345678901",
+      "name": "Fetch Recent Emails",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [460, 300],
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "REPLACE_WITH_YOUR_GMAIL_CREDENTIAL_ID",
+          "name": "Gmail OAuth2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Transform Gmail data to memory format\nconst items = [];\n\nfor (const item of $input.all()) {\n  const email = item.json;\n  \n  // Extract headers\n  const headers = email.payload?.headers || [];\n  const getHeader = (name) => headers.find(h => h.name === name)?.value || '';\n  \n  // Get email body\n  let content = email.snippet || '';\n  if (email.payload?.body?.data) {\n    try {\n      content = Buffer.from(email.payload.body.data, 'base64').toString('utf-8');\n    } catch (e) {\n      content = email.snippet || '(no content)';\n    }\n  }\n  \n  items.push({\n    timestamp: email.internalDate ? new Date(parseInt(email.internalDate)).toISOString() : new Date().toISOString(),\n    content: content.substring(0, 5000), // Limit to 5000 chars\n    metadata: {\n      from: getHeader('From'),\n      to: getHeader('To'),\n      subject: getHeader('Subject'),\n      messageId: email.id,\n      threadId: email.threadId\n    }\n  });\n}\n\nreturn [{ json: { type: 'email', items } }];"
+      },
+      "id": "c3d4e5f6-a7b8-9012-cdef-123456789012",
+      "name": "Transform to Memory Format",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [680, 300]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://141.148.210.250:3001/api/memory/ingest",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-API-Key",
+              "value": "65f7a184488e0bccaa23dd83ff114ac9fc7815c834b3e29ab717ba79f7537863"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify($json) }}",
+        "options": {}
+      },
+      "id": "d4e5f6a7-b8c9-0123-def1-234567890123",
+      "name": "Ingest to Memory",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [900, 300]
+    }
+  ],
+  "connections": {
+    "Schedule Every Hour": {
+      "main": [
+        [
+          {
+            "node": "Fetch Recent Emails",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch Recent Emails": {
+      "main": [
+        [
+          {
+            "node": "Transform to Memory Format",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Transform to Memory Format": {
+      "main": [
+        [
+          {
+            "node": "Ingest to Memory",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "tags": [],
+  "triggerCount": 0,
+  "updatedAt": "2026-03-19T00:00:00.000Z",
+  "versionId": "1"
+}

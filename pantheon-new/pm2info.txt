@@ -1,0 +1,59 @@
+ Describing process with id 0 - name pantheon-server 
+┌───────────────────┬───────────────────────────────────────────────────────┐
+│ status            │ online                                                │
+│ name              │ pantheon-server                                       │
+│ namespace         │ default                                               │
+│ version           │ 0.0.0                                                 │
+│ restarts          │ 5                                                     │
+│ uptime            │ 3h                                                    │
+│ script path       │ /home/ubuntu/pantheon-server/.output/server/index.mjs │
+│ script args       │ N/A                                                   │
+│ error log path    │ /home/ubuntu/.pm2/logs/pantheon-server-error.log      │
+│ out log path      │ /home/ubuntu/.pm2/logs/pantheon-server-out.log        │
+│ pid path          │ /home/ubuntu/.pm2/pids/pantheon-server-0.pid          │
+│ interpreter       │ /home/ubuntu/.nvm/versions/node/v20.20.0/bin/node     │
+│ interpreter args  │ N/A                                                   │
+│ script id         │ 0                                                     │
+│ exec cwd          │ /home/ubuntu/pantheon-server                          │
+│ exec mode         │ fork_mode                                             │
+│ node.js version   │ 20.20.0                                               │
+│ node env          │ N/A                                                   │
+│ watch & reload    │ ✘                                                     │
+│ unstable restarts │ 0                                                     │
+│ created at        │ 2026-03-02T01:07:39.387Z                              │
+└───────────────────┴───────────────────────────────────────────────────────┘
+ Actions available 
+┌────────────────────────┐
+│ km:heapdump            │
+│ km:cpu:profiling:start │
+│ km:cpu:profiling:stop  │
+│ km:heap:sampling:start │
+│ km:heap:sampling:stop  │
+└────────────────────────┘
+ Trigger via: pm2 trigger pantheon-server <action_name>
+
+ Code metrics value 
+┌────────────────────────┬───────────┐
+│ Used Heap Size         │ 12.86 MiB │
+│ Heap Usage             │ 73.86 %   │
+│ Heap Size              │ 17.41 MiB │
+│ Event Loop Latency p95 │ 1.56 ms   │
+│ Event Loop Latency     │ 0.60 ms   │
+│ Active handles         │ 5         │
+│ Active requests        │ 0         │
+│ HTTP                   │ 0 req/min │
+│ HTTP P95 Latency       │ 1655 ms   │
+│ HTTP Mean Latency      │ 1374 ms   │
+└────────────────────────┴───────────┘
+ Divergent env variables from local env 
+┌────────────────┬──────────────────────────────────┐
+│ PWD            │ /home/ubuntu/pantheon-server     │
+│ SSH_CONNECTION │ 36.255.19.65 54143 10.0.0.104 22 │
+│ XDG_SESSION_ID │ 578                              │
+│ SSH_CLIENT     │ 36.255.19.65 54143 22            │
+└────────────────┴──────────────────────────────────┘
+
+ Add your own code metrics: http://bit.ly/code-metrics
+ Use `pm2 logs pantheon-server [--lines 1000]` to display logs
+ Use `pm2 env 0` to display environment variables
+ Use `pm2 monit` to monitor CPU and Memory usage pantheon-server

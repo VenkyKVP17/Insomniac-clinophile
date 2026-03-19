@@ -1,0 +1,90 @@
+{
+  "name": "Pantheon: Telegram to Memory",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "telegram-archive",
+        "responseMode": "lastNode",
+        "options": {}
+      },
+      "id": "d6e7f8a9-b0c1-2345-0123-456789012345",
+      "name": "Telegram Archive Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [240, 300],
+      "webhookId": "telegram-archive-webhook-pantheon"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Transform Telegram data to memory format\nconst update = $input.first().json;\nconst message = update.message || update.edited_message;\n\nif (!message) {\n  return [{ json: { type: 'telegram', items: [] } }];\n}\n\nconst items = [{\n  timestamp: new Date(message.date * 1000).toISOString(),\n  content: message.text || message.caption || '(media message)',\n  metadata: {\n    from: message.from?.first_name || message.from?.username || 'Unknown',\n    chat_name: message.chat?.title || message.chat?.first_name || 'Private',\n    message_id: message.message_id,\n    chat_id: message.chat?.id\n  }\n}];\n\nreturn [{ json: { type: 'telegram', items } }];"
+      },
+      "id": "e7f8a9b0-c1d2-3456-1234-567890123456",
+      "name": "Transform to Memory Format",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [460, 300]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://141.148.210.250:3001/api/memory/ingest",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-API-Key",
+              "value": "65f7a184488e0bccaa23dd83ff114ac9fc7815c834b3e29ab717ba79f7537863"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify($json) }}",
+        "options": {}
+      },
+      "id": "f8a9b0c1-d2e3-4567-2345-678901234567",
+      "name": "Ingest to Memory",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [680, 300]
+    }
+  ],
+  "connections": {
+    "Telegram Archive Webhook": {
+      "main": [
+        [
+          {
+            "node": "Transform to Memory Format",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Transform to Memory Format": {
+      "main": [
+        [
+          {
+            "node": "Ingest to Memory",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "tags": [],
+  "triggerCount": 0,
+  "updatedAt": "2026-03-19T00:00:00.000Z",
+  "versionId": "1"
+}

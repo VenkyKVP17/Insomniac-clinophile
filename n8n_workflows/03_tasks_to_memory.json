@@ -1,0 +1,127 @@
+{
+  "name": "Pantheon: Tasks to Memory",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "hours",
+              "hoursInterval": 3
+            }
+          ]
+        }
+      },
+      "id": "c9d0e1f2-a3b4-5678-3456-789012345678",
+      "name": "Schedule Every 3 Hours",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [240, 300]
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "taskListId": {
+          "__rl": true,
+          "value": "@default",
+          "mode": "list"
+        },
+        "returnAll": true,
+        "options": {}
+      },
+      "id": "d0e1f2a3-b4c5-6789-4567-890123456789",
+      "name": "Fetch Tasks",
+      "type": "n8n-nodes-base.googleTasks",
+      "typeVersion": 1,
+      "position": [460, 300],
+      "credentials": {
+        "googleTasksOAuth2Api": {
+          "id": "REPLACE_WITH_YOUR_TASKS_CREDENTIAL_ID",
+          "name": "Google Tasks OAuth2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Transform Tasks data to memory format\nconst items = [];\n\nfor (const item of $input.all()) {\n  const task = item.json;\n  \n  const contentParts = [\n    task.title || '(no title)',\n    task.notes ? `Notes: ${task.notes}` : '',\n    task.due ? `Due: ${task.due}` : '',\n    task.status ? `Status: ${task.status}` : ''\n  ].filter(Boolean);\n  \n  const content = contentParts.join('\\n');\n  \n  items.push({\n    timestamp: task.updated || new Date().toISOString(),\n    content: content.substring(0, 2000),\n    metadata: {\n      title: task.title || '(no title)',\n      priority: task.priority || 'normal',\n      due: task.due,\n      status: task.status,\n      taskId: task.id\n    }\n  });\n}\n\nreturn [{ json: { type: 'task', items } }];"
+      },
+      "id": "e1f2a3b4-c5d6-7890-5678-901234567890",
+      "name": "Transform to Memory Format",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [680, 300]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://141.148.210.250:3001/api/memory/ingest",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-API-Key",
+              "value": "65f7a184488e0bccaa23dd83ff114ac9fc7815c834b3e29ab717ba79f7537863"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify($json) }}",
+        "options": {}
+      },
+      "id": "f2a3b4c5-d6e7-8901-6789-012345678901",
+      "name": "Ingest to Memory",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [900, 300]
+    }
+  ],
+  "connections": {
+    "Schedule Every 3 Hours": {
+      "main": [
+        [
+          {
+            "node": "Fetch Tasks",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch Tasks": {
+      "main": [
+        [
+          {
+            "node": "Transform to Memory Format",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Transform to Memory Format": {
+      "main": [
+        [
+          {
+            "node": "Ingest to Memory",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "tags": [],
+  "triggerCount": 0,
+  "updatedAt": "2026-03-19T00:00:00.000Z",
+  "versionId": "1"
+}

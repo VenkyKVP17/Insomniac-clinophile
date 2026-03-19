@@ -1,0 +1,1133 @@
+{
+  "version": 1,
+  "jobs": [
+    {
+      "id": "bff76c95-6761-4770-bfc7-eecd2bbec34f",
+      "agentId": "argus",
+      "name": "ARGUS Schedule",
+      "enabled": true,
+      "createdAtMs": 1773660489529,
+      "updatedAtMs": 1773887400045,
+      "schedule": {
+        "kind": "cron",
+        "expr": "0 8 * * *",
+        "tz": "Asia/Kolkata"
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "message": "Scheduled routine check"
+      },
+      "delivery": {
+        "mode": "announce",
+        "channel": "last"
+      },
+      "state": {
+        "nextRunAtMs": 1773973800000,
+        "lastRunAtMs": 1773887400011,
+        "lastRunStatus": "error",
+        "lastStatus": "error",
+        "lastDurationMs": 34,
+        "lastErrorReason": "auth",
+        "lastDeliveryStatus": "unknown",
+        "consecutiveErrors": 3,
+        "lastError": "FailoverError: No API key found for provider \"anthropic\". Auth store: /home/ubuntu/.openclaw/agents/argus/agent/auth-profiles.json (agentDir: /home/ubuntu/.openclaw/agents/argus/agent). Configure auth for this agent (openclaw agents add <id>) or copy auth-profiles.json from the main agentDir."
+      }
+    },
+    {
+      "id": "002f4938-f2ad-4e7d-ba2c-3c323060fa9c",
+      "agentId": "asclepius",
+      "name": "ASCLEPIUS Schedule",
+      "enabled": true,
+      "createdAtMs": 1773660500770,
+      "updatedAtMs": 1773887400079,
+      "schedule": {
+        "kind": "cron",
+        "expr": "0 8 * * *",
+        "tz": "Asia/Kolkata"
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "message": "Scheduled routine check"
+      },
+      "delivery": {
+        "mode": "announce",
+        "channel": "last"
+      },
+      "state": {
+        "nextRunAtMs": 1773973800000,
+        "lastRunAtMs": 1773887400045,
+        "lastRunStatus": "error",
+        "lastStatus": "error",
+        "lastDurationMs": 34,
+        "lastErrorReason": "auth",
+        "lastDeliveryStatus": "unknown",
+        "consecutiveErrors": 3,
+        "lastError": "FailoverError: No API key found for provider \"anthropic\". Auth store: /home/ubuntu/.openclaw/agents/asclepius/agent/auth-profiles.json (agentDir: /home/ubuntu/.openclaw/agents/asclepius/agent). Configure auth for this agent (openclaw agents add <id>) or copy auth-profiles.json from the main agentDir."
+      }
+    },
+    {
+      "id": "a9dd0316-51d3-4fd5-b61c-05e485848467",
+      "agentId": "plutus",
+      "name": "PLUTUS Schedule",
+      "enabled": true,
+      "createdAtMs": 1773660512502,
+      "updatedAtMs": 1773887400111,
+      "schedule": {
+        "kind": "cron",
+        "expr": "0 8 * * *",
+        "tz": "Asia/Kolkata"
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "message": "Scheduled routine check"
+      },
+      "delivery": {
+        "mode": "announce",
+        "channel": "last"
+      },
+      "state": {
+        "nextRunAtMs": 1773973800000,
+        "lastRunAtMs": 1773887400079,
+        "lastRunStatus": "error",
+        "lastStatus": "error",
+        "lastDurationMs": 32,
+        "lastErrorReason": "auth",
+        "lastDeliveryStatus": "unknown",
+        "consecutiveErrors": 3,
+        "lastError": "FailoverError: No API key found for provider \"anthropic\". Auth store: /home/ubuntu/.openclaw/agents/plutus/agent/auth-profiles.json (agentDir: /home/ubuntu/.openclaw/agents/plutus/agent). Configure auth for this agent (openclaw agents add <id>) or copy auth-profiles.json from the main agentDir."
+      }
+    },
+    {
+      "id": "c2184f54-e692-4e8d-abef-91d9b1dea811",
+      "agentId": "chronos",
+      "name": "CHRONOS Schedule",
+      "enabled": true,
+      "createdAtMs": 1773660525452,
+      "updatedAtMs": 1773887400144,
+      "schedule": {
+        "kind": "cron",
+        "expr": "0 8 * * *",
+        "tz": "Asia/Kolkata"
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "message": "Scheduled routine check"
+      },
+      "delivery": {
+        "mode": "announce",
+        "channel": "last"
+      },
+      "state": {
+        "nextRunAtMs": 1773973800000,
+        "lastRunAtMs": 1773887400111,
+        "lastRunStatus": "error",
+        "lastStatus": "error",
+        "lastDurationMs": 33,
+        "lastErrorReason": "auth",
+        "lastDeliveryStatus": "unknown",
+        "consecutiveErrors": 3,
+        "lastError": "FailoverError: No API key found for provider \"anthropic\". Auth store: /home/ubuntu/.openclaw/agents/chronos/agent/auth-profiles.json (agentDir: /home/ubuntu/.openclaw/agents/chronos/agent). Configure auth for this agent (openclaw agents add <id>) or copy auth-profiles.json from the main agentDir."
+      }
+    },
+    {
+      "id": "43b7eaa6-ac3f-4b98-9e3a-9fef56b0bcad",
+      "agentId": "heracles",
+      "name": "HERACLES Schedule",
+      "enabled": true,
+      "createdAtMs": 1773660538640,
+      "updatedAtMs": 1773887400192,
+      "schedule": {
+        "kind": "cron",
+        "expr": "0 8 * * *",
+        "tz": "Asia/Kolkata"
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "message": "Scheduled routine check"
+      },
+      "delivery": {
+        "mode": "announce",
+        "channel": "last"
+      },
+      "state": {
+        "nextRunAtMs": 1773973800000,
+        "lastRunAtMs": 1773887400144,
+        "lastRunStatus": "error",
+        "lastStatus": "error",
+        "lastDurationMs": 48,
+        "lastErrorReason": "auth",
+        "lastDeliveryStatus": "unknown",
+        "consecutiveErrors": 3,
+        "lastError": "FailoverError: No API key found for provider \"anthropic\". Auth store: /home/ubuntu/.openclaw/agents/heracles/agent/auth-profiles.json (agentDir: /home/ubuntu/.openclaw/agents/heracles/agent). Configure auth for this agent (openclaw agents add <id>) or copy auth-profiles.json from the main agentDir."
+      }
+    },
+    {
+      "id": "7e173097-3d39-4dd4-bb94-e678fcbe8ce8",
+      "agentId": "epione",
+      "name": "EPIONE Schedule",
+      "enabled": true,
+      "createdAtMs": 1773660551649,
+      "updatedAtMs": 1773932729796,
+      "schedule": {
+        "kind": "cron",
+        "expr": "0 * * * *",
+        "tz": "Asia/Kolkata",
+        "staggerMs": 300000
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "message": "Scheduled routine check"
+      },
+      "delivery": {
+        "mode": "announce",
+        "channel": "last"
+      },
+      "state": {
+        "nextRunAtMs": 1773936329796,
+        "lastRunAtMs": 1773932729715,
+        "lastRunStatus": "error",
+        "lastStatus": "error",
+        "lastDurationMs": 81,
+        "lastErrorReason": "auth",
+        "lastDeliveryStatus": "unknown",
+        "consecutiveErrors": 76,
+        "lastError": "FailoverError: No API key found for provider \"anthropic\". Auth store: /home/ubuntu/.openclaw/agents/epione/agent/auth-profiles.json (agentDir: /home/ubuntu/.openclaw/agents/epione/agent). Configure auth for this agent (openclaw agents add <id>) or copy auth-profiles.json from the main agentDir."
+      }
+    },
+    {
+      "id": "2db59d5b-2e8f-41f2-9797-41b47bcc4aeb",
+      "agentId": "iris",
+      "name": "IRIS Schedule",
+      "enabled": true,
+      "createdAtMs": 1773660565786,
+      "updatedAtMs": 1773932728250,
+      "schedule": {
+        "kind": "cron",
+        "expr": "0 * * * *",
+        "tz": "Asia/Kolkata",
+        "staggerMs": 300000
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "message": "Scheduled routine check"
+      },
+      "delivery": {
+        "mode": "announce",
+        "channel": "last"
+      },
+      "state": {
+        "nextRunAtMs": 1773936328250,
+        "lastRunAtMs": 1773932727693,
+        "lastRunStatus": "error",
+        "lastStatus": "error",
+        "lastDurationMs": 557,
+        "lastErrorReason": "auth",
+        "lastDeliveryStatus": "unknown",
+        "consecutiveErrors": 76,
+        "lastError": "FailoverError: No API key found for provider \"anthropic\". Auth store: /home/ubuntu/.openclaw/agents/iris/agent/auth-profiles.json (agentDir: /home/ubuntu/.openclaw/agents/iris/agent). Configure auth for this agent (openclaw agents add <id>) or copy auth-profiles.json from the main agentDir."
+      }
+    },
+    {
+      "id": "882af5e7-78b9-436c-bb20-ef8a046d6e58",
+      "agentId": "hermes_contacts",
+      "name": "HERMES-Contacts Schedule",
+      "enabled": true,
+      "createdAtMs": 1773660579437,
+      "updatedAtMs": 1773887400227,
+      "schedule": {
+        "kind": "cron",
+        "expr": "0 8 * * *",
+        "tz": "Asia/Kolkata"
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "message": "Scheduled routine check"
+      },
+      "delivery": {
+        "mode": "announce",
+        "channel": "last"
+      },
+      "state": {
+        "nextRunAtMs": 1773973800000,
+        "lastRunAtMs": 1773887400192,
+        "lastRunStatus": "error",
+        "lastStatus": "error",
+        "lastDurationMs": 35,
+        "lastErrorReason": "auth",
+        "lastDeliveryStatus": "unknown",
+        "consecutiveErrors": 3,
+        "lastError": "FailoverError: No API key found for provider \"anthropic\". Auth store: /home/ubuntu/.openclaw/agents/hermes_contacts/agent/auth-profiles.json (agentDir: /home/ubuntu/.openclaw/agents/hermes_contacts/agent). Configure auth for this agent (openclaw agents add <id>) or copy auth-profiles.json from the main agentDir."
+      }
+    },
+    {
+      "id": "9d48e8b8-1684-41db-9ac5-d184418c78a3",
+      "agentId": "hermes",
+      "name": "HERMES Schedule",
+      "enabled": true,
+      "createdAtMs": 1773660595070,
+      "updatedAtMs": 1773887400252,
+      "schedule": {
+        "kind": "cron",
+        "expr": "0 8 * * *",
+        "tz": "Asia/Kolkata"
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "message": "Scheduled routine check"
+      },
+      "delivery": {
+        "mode": "announce",
+        "channel": "last"
+      },
+      "state": {
+        "nextRunAtMs": 1773973800000,
+        "lastRunAtMs": 1773887400227,
+        "lastRunStatus": "error",
+        "lastStatus": "error",
+        "lastDurationMs": 25,
+        "lastErrorReason": "auth",
+        "lastDeliveryStatus": "unknown",
+        "consecutiveErrors": 3,
+        "lastError": "FailoverError: No API key found for provider \"anthropic\". Auth store: /home/ubuntu/.openclaw/agents/hermes/agent/auth-profiles.json (agentDir: /home/ubuntu/.openclaw/agents/hermes/agent). Configure auth for this agent (openclaw agents add <id>) or copy auth-profiles.json from the main agentDir."
+      }
+    },
+    {
+      "id": "c3f22ead-db43-484b-9ab6-af19f6479546",
+      "agentId": "demeter",
+      "name": "DEMETER Schedule",
+      "enabled": true,
+      "createdAtMs": 1773660606888,
+      "updatedAtMs": 1773887400278,
+      "schedule": {
+        "kind": "cron",
+        "expr": "0 8 * * *",
+        "tz": "Asia/Kolkata"
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "message": "Scheduled routine check"
+      },
+      "delivery": {
+        "mode": "announce",
+        "channel": "last"
+      },
+      "state": {
+        "nextRunAtMs": 1773973800000,
+        "lastRunAtMs": 1773887400252,
+        "lastRunStatus": "error",
+        "lastStatus": "error",
+        "lastDurationMs": 26,
+        "lastErrorReason": "auth",
+        "lastDeliveryStatus": "unknown",
+        "consecutiveErrors": 3,
+        "lastError": "FailoverError: No API key found for provider \"anthropic\". Auth store: /home/ubuntu/.openclaw/agents/demeter/agent/auth-profiles.json (agentDir: /home/ubuntu/.openclaw/agents/demeter/agent). Configure auth for this agent (openclaw agents add <id>) or copy auth-profiles.json from the main agentDir."
+      }
+    },
+    {
+      "id": "98ad317c-3527-4e5e-b3c5-bb1e0260169e",
+      "agentId": "hygieia",
+      "name": "HYGIEIA Schedule",
+      "enabled": true,
+      "createdAtMs": 1773660622096,
+      "updatedAtMs": 1773887400305,
+      "schedule": {
+        "kind": "cron",
+        "expr": "0 8 * * *",
+        "tz": "Asia/Kolkata"
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "message": "Scheduled routine check"
+      },
+      "delivery": {
+        "mode": "announce",
+        "channel": "last"
+      },
+      "state": {
+        "nextRunAtMs": 1773973800000,
+        "lastRunAtMs": 1773887400278,
+        "lastRunStatus": "error",
+        "lastStatus": "error",
+        "lastDurationMs": 27,
+        "lastErrorReason": "auth",
+        "lastDeliveryStatus": "unknown",
+        "consecutiveErrors": 3,
+        "lastError": "FailoverError: No API key found for provider \"anthropic\". Auth store: /home/ubuntu/.openclaw/agents/hygieia/agent/auth-profiles.json (agentDir: /home/ubuntu/.openclaw/agents/hygieia/agent). Configure auth for this agent (openclaw agents add <id>) or copy auth-profiles.json from the main agentDir."
+      }
+    },
+    {
+      "id": "f97fec54-cf94-43f4-baa5-55bc1fbdb99a",
+      "agentId": "asteria",
+      "name": "ASTERIA Schedule",
+      "enabled": true,
+      "createdAtMs": 1773660639330,
+      "updatedAtMs": 1773887400333,
+      "schedule": {
+        "kind": "cron",
+        "expr": "0 8 * * *",
+        "tz": "Asia/Kolkata"
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "message": "Scheduled routine check"
+      },
+      "delivery": {
+        "mode": "announce",
+        "channel": "last"
+      },
+      "state": {
+        "nextRunAtMs": 1773973800000,
+        "lastRunAtMs": 1773887400305,
+        "lastRunStatus": "error",
+        "lastStatus": "error",
+        "lastDurationMs": 28,
+        "lastErrorReason": "auth",
+        "lastDeliveryStatus": "unknown",
+        "consecutiveErrors": 3,
+        "lastError": "FailoverError: No API key found for provider \"anthropic\". Auth store: /home/ubuntu/.openclaw/agents/asteria/agent/auth-profiles.json (agentDir: /home/ubuntu/.openclaw/agents/asteria/agent). Configure auth for this agent (openclaw agents add <id>) or copy auth-profiles.json from the main agentDir."
+      }
+    },
+    {
+      "id": "231ce4c7-b0fa-4fe8-8f9a-416ceff894cf",
+      "agentId": "proteus",
+      "name": "PROTEUS Schedule",
+      "enabled": true,
+      "createdAtMs": 1773660656664,
+      "updatedAtMs": 1773887400358,
+      "schedule": {
+        "kind": "cron",
+        "expr": "0 8 * * *",
+        "tz": "Asia/Kolkata"
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "message": "Scheduled routine check"
+      },
+      "delivery": {
+        "mode": "announce",
+        "channel": "last"
+      },
+      "state": {
+        "nextRunAtMs": 1773973800000,
+        "lastRunAtMs": 1773887400333,
+        "lastRunStatus": "error",
+        "lastStatus": "error",
+        "lastDurationMs": 25,
+        "lastErrorReason": "auth",
+        "lastDeliveryStatus": "unknown",
+        "consecutiveErrors": 3,
+        "lastError": "FailoverError: No API key found for provider \"anthropic\". Auth store: /home/ubuntu/.openclaw/agents/proteus/agent/auth-profiles.json (agentDir: /home/ubuntu/.openclaw/agents/proteus/agent). Configure auth for this agent (openclaw agents add <id>) or copy auth-profiles.json from the main agentDir."
+      }
+    },
+    {
+      "id": "9a2e185d-a9f9-4a9d-9324-ddd879a4a7ed",
+      "agentId": "moira",
+      "name": "MOIRA Schedule",
+      "enabled": true,
+      "createdAtMs": 1773660672289,
+      "updatedAtMs": 1773660672289,
+      "schedule": {
+        "kind": "cron",
+        "expr": "0 8 * * 1",
+        "tz": "Asia/Kolkata"
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "message": "Scheduled routine check"
+      },
+      "delivery": {
+        "mode": "announce",
+        "channel": "last"
+      },
+      "state": {
+        "nextRunAtMs": 1774233000000
+      }
+    },
+    {
+      "id": "62d8e8da-5f56-4949-88bd-7a2f07db42f2",
+      "agentId": "midas",
+      "name": "MIDAS Schedule",
+      "enabled": true,
+      "createdAtMs": 1773660703534,
+      "updatedAtMs": 1773887400384,
+      "schedule": {
+        "kind": "cron",
+        "expr": "0 8 * * *",
+        "tz": "Asia/Kolkata"
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "message": "Scheduled routine check"
+      },
+      "delivery": {
+        "mode": "announce",
+        "channel": "last"
+      },
+      "state": {
+        "nextRunAtMs": 1773973800000,
+        "lastRunAtMs": 1773887400358,
+        "lastRunStatus": "error",
+        "lastStatus": "error",
+        "lastDurationMs": 26,
+        "lastErrorReason": "auth",
+        "lastDeliveryStatus": "unknown",
+        "consecutiveErrors": 3,
+        "lastError": "FailoverError: No API key found for provider \"anthropic\". Auth store: /home/ubuntu/.openclaw/agents/midas/agent/auth-profiles.json (agentDir: /home/ubuntu/.openclaw/agents/midas/agent). Configure auth for this agent (openclaw agents add <id>) or copy auth-profiles.json from the main agentDir."
+      }
+    },
+    {
+      "id": "ec8e65a7-cc3c-43c1-be59-148a05610b01",
+      "agentId": "metis",
+      "name": "METIS Schedule",
+      "enabled": true,
+      "createdAtMs": 1773660717397,
+      "updatedAtMs": 1773887400411,
+      "schedule": {
+        "kind": "cron",
+        "expr": "0 8 * * *",
+        "tz": "Asia/Kolkata"
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "message": "Scheduled routine check"
+      },
+      "delivery": {
+        "mode": "announce",
+        "channel": "last"
+      },
+      "state": {
+        "nextRunAtMs": 1773973800000,
+        "lastRunAtMs": 1773887400384,
+        "lastRunStatus": "error",
+        "lastStatus": "error",
+        "lastDurationMs": 27,
+        "lastErrorReason": "auth",
+        "lastDeliveryStatus": "unknown",
+        "consecutiveErrors": 3,
+        "lastError": "FailoverError: No API key found for provider \"anthropic\". Auth store: /home/ubuntu/.openclaw/agents/metis/agent/auth-profiles.json (agentDir: /home/ubuntu/.openclaw/agents/metis/agent). Configure auth for this agent (openclaw agents add <id>) or copy auth-profiles.json from the main agentDir."
+      }
+    },
+    {
+      "id": "62e0a63c-e909-4852-a25d-c176f81a6a1e",
+      "agentId": "hera",
+      "name": "HERA Schedule",
+      "enabled": true,
+      "createdAtMs": 1773660732194,
+      "updatedAtMs": 1773660732194,
+      "schedule": {
+        "kind": "cron",
+        "expr": "0 8 1 * *",
+        "tz": "Asia/Kolkata"
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "message": "Scheduled routine check"
+      },
+      "delivery": {
+        "mode": "announce",
+        "channel": "last"
+      },
+      "state": {
+        "nextRunAtMs": 1775010600000
+      }
+    },
+    {
+      "id": "494c9a90-a717-4583-93bb-01103de29ad3",
+      "agentId": "argus",
+      "name": "ARGUS Schedule",
+      "enabled": true,
+      "createdAtMs": 1773660817498,
+      "updatedAtMs": 1773887400436,
+      "schedule": {
+        "kind": "cron",
+        "expr": "0 8 * * *",
+        "tz": "Asia/Kolkata"
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "message": "Scheduled routine check"
+      },
+      "delivery": {
+        "mode": "announce",
+        "channel": "last"
+      },
+      "state": {
+        "nextRunAtMs": 1773973800000,
+        "lastRunAtMs": 1773887400411,
+        "lastRunStatus": "error",
+        "lastStatus": "error",
+        "lastDurationMs": 25,
+        "lastErrorReason": "auth",
+        "lastDeliveryStatus": "unknown",
+        "consecutiveErrors": 3,
+        "lastError": "FailoverError: No API key found for provider \"anthropic\". Auth store: /home/ubuntu/.openclaw/agents/argus/agent/auth-profiles.json (agentDir: /home/ubuntu/.openclaw/agents/argus/agent). Configure auth for this agent (openclaw agents add <id>) or copy auth-profiles.json from the main agentDir."
+      }
+    },
+    {
+      "id": "1e1c242d-a635-46f5-b1c7-6c08cfd455a9",
+      "agentId": "asclepius",
+      "name": "ASCLEPIUS Schedule",
+      "enabled": true,
+      "createdAtMs": 1773660833274,
+      "updatedAtMs": 1773887400465,
+      "schedule": {
+        "kind": "cron",
+        "expr": "0 8 * * *",
+        "tz": "Asia/Kolkata"
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "message": "Scheduled routine check"
+      },
+      "delivery": {
+        "mode": "announce",
+        "channel": "last"
+      },
+      "state": {
+        "nextRunAtMs": 1773973800000,
+        "lastRunAtMs": 1773887400436,
+        "lastRunStatus": "error",
+        "lastStatus": "error",
+        "lastDurationMs": 29,
+        "lastErrorReason": "auth",
+        "lastDeliveryStatus": "unknown",
+        "consecutiveErrors": 3,
+        "lastError": "FailoverError: No API key found for provider \"anthropic\". Auth store: /home/ubuntu/.openclaw/agents/asclepius/agent/auth-profiles.json (agentDir: /home/ubuntu/.openclaw/agents/asclepius/agent). Configure auth for this agent (openclaw agents add <id>) or copy auth-profiles.json from the main agentDir."
+      }
+    },
+    {
+      "id": "c879983e-180f-4903-813a-91ff6b280c6a",
+      "agentId": "plutus",
+      "name": "PLUTUS Schedule",
+      "enabled": true,
+      "createdAtMs": 1773660853147,
+      "updatedAtMs": 1773887400492,
+      "schedule": {
+        "kind": "cron",
+        "expr": "0 8 * * *",
+        "tz": "Asia/Kolkata"
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "message": "Scheduled routine check"
+      },
+      "delivery": {
+        "mode": "announce",
+        "channel": "last"
+      },
+      "state": {
+        "nextRunAtMs": 1773973800000,
+        "lastRunAtMs": 1773887400465,
+        "lastRunStatus": "error",
+        "lastStatus": "error",
+        "lastDurationMs": 27,
+        "lastErrorReason": "auth",
+        "lastDeliveryStatus": "unknown",
+        "consecutiveErrors": 3,
+        "lastError": "FailoverError: No API key found for provider \"anthropic\". Auth store: /home/ubuntu/.openclaw/agents/plutus/agent/auth-profiles.json (agentDir: /home/ubuntu/.openclaw/agents/plutus/agent). Configure auth for this agent (openclaw agents add <id>) or copy auth-profiles.json from the main agentDir."
+      }
+    },
+    {
+      "id": "c6f56b56-f8a4-4fd7-8a84-e18a5485787b",
+      "agentId": "chronos",
+      "name": "CHRONOS Schedule",
+      "enabled": true,
+      "createdAtMs": 1773660870921,
+      "updatedAtMs": 1773887400517,
+      "schedule": {
+        "kind": "cron",
+        "expr": "0 8 * * *",
+        "tz": "Asia/Kolkata"
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "message": "Scheduled routine check"
+      },
+      "delivery": {
+        "mode": "announce",
+        "channel": "last"
+      },
+      "state": {
+        "nextRunAtMs": 1773973800000,
+        "lastRunAtMs": 1773887400492,
+        "lastRunStatus": "error",
+        "lastStatus": "error",
+        "lastDurationMs": 25,
+        "lastErrorReason": "auth",
+        "lastDeliveryStatus": "unknown",
+        "consecutiveErrors": 3,
+        "lastError": "FailoverError: No API key found for provider \"anthropic\". Auth store: /home/ubuntu/.openclaw/agents/chronos/agent/auth-profiles.json (agentDir: /home/ubuntu/.openclaw/agents/chronos/agent). Configure auth for this agent (openclaw agents add <id>) or copy auth-profiles.json from the main agentDir."
+      }
+    },
+    {
+      "id": "777142fd-0b99-496e-96ec-f5558a7ddf8e",
+      "agentId": "heracles",
+      "name": "HERACLES Schedule",
+      "enabled": true,
+      "createdAtMs": 1773660888251,
+      "updatedAtMs": 1773887400541,
+      "schedule": {
+        "kind": "cron",
+        "expr": "0 8 * * *",
+        "tz": "Asia/Kolkata"
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "message": "Scheduled routine check"
+      },
+      "delivery": {
+        "mode": "announce",
+        "channel": "last"
+      },
+      "state": {
+        "nextRunAtMs": 1773973800000,
+        "lastRunAtMs": 1773887400517,
+        "lastRunStatus": "error",
+        "lastStatus": "error",
+        "lastDurationMs": 24,
+        "lastErrorReason": "auth",
+        "lastDeliveryStatus": "unknown",
+        "consecutiveErrors": 3,
+        "lastError": "FailoverError: No API key found for provider \"anthropic\". Auth store: /home/ubuntu/.openclaw/agents/heracles/agent/auth-profiles.json (agentDir: /home/ubuntu/.openclaw/agents/heracles/agent). Configure auth for this agent (openclaw agents add <id>) or copy auth-profiles.json from the main agentDir."
+      }
+    },
+    {
+      "id": "d7a70df3-1db7-4e8d-b8a1-b14c802089f9",
+      "agentId": "epione",
+      "name": "EPIONE Schedule",
+      "enabled": true,
+      "createdAtMs": 1773660909423,
+      "updatedAtMs": 1773932731833,
+      "schedule": {
+        "kind": "cron",
+        "expr": "0 * * * *",
+        "tz": "Asia/Kolkata",
+        "staggerMs": 300000
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "message": "Scheduled routine check"
+      },
+      "delivery": {
+        "mode": "announce",
+        "channel": "last"
+      },
+      "state": {
+        "nextRunAtMs": 1773936331833,
+        "lastRunAtMs": 1773932731790,
+        "lastRunStatus": "error",
+        "lastStatus": "error",
+        "lastDurationMs": 43,
+        "lastErrorReason": "auth",
+        "lastDeliveryStatus": "unknown",
+        "consecutiveErrors": 75,
+        "lastError": "FailoverError: No API key found for provider \"anthropic\". Auth store: /home/ubuntu/.openclaw/agents/epione/agent/auth-profiles.json (agentDir: /home/ubuntu/.openclaw/agents/epione/agent). Configure auth for this agent (openclaw agents add <id>) or copy auth-profiles.json from the main agentDir."
+      }
+    },
+    {
+      "id": "264ce0ca-b704-47e5-8b41-9348b074d7af",
+      "agentId": "iris",
+      "name": "IRIS Schedule",
+      "enabled": true,
+      "createdAtMs": 1773660937584,
+      "updatedAtMs": 1773929131827,
+      "schedule": {
+        "kind": "cron",
+        "expr": "0 * * * *",
+        "tz": "Asia/Kolkata",
+        "staggerMs": 300000
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "message": "Scheduled routine check"
+      },
+      "delivery": {
+        "mode": "announce",
+        "channel": "last"
+      },
+      "state": {
+        "nextRunAtMs": 1773932731827,
+        "lastRunAtMs": 1773929131778,
+        "lastRunStatus": "error",
+        "lastStatus": "error",
+        "lastDurationMs": 49,
+        "lastErrorReason": "auth",
+        "lastDeliveryStatus": "unknown",
+        "consecutiveErrors": 74,
+        "runningAtMs": 1773932733854
+      }
+    },
+    {
+      "id": "8264fa4e-6c7a-42f2-a9c8-c1498fda3f8d",
+      "agentId": "hermes_contacts",
+      "name": "HERMES-Contacts Schedule",
+      "enabled": true,
+      "createdAtMs": 1773660961197,
+      "updatedAtMs": 1773887400566,
+      "schedule": {
+        "kind": "cron",
+        "expr": "0 8 * * *",
+        "tz": "Asia/Kolkata"
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "message": "Scheduled routine check"
+      },
+      "delivery": {
+        "mode": "announce",
+        "channel": "last"
+      },
+      "state": {
+        "nextRunAtMs": 1773973800000,
+        "lastRunAtMs": 1773887400541,
+        "lastRunStatus": "error",
+        "lastStatus": "error",
+        "lastDurationMs": 25,
+        "lastErrorReason": "auth",
+        "lastDeliveryStatus": "unknown",
+        "consecutiveErrors": 3,
+        "lastError": "FailoverError: No API key found for provider \"anthropic\". Auth store: /home/ubuntu/.openclaw/agents/hermes_contacts/agent/auth-profiles.json (agentDir: /home/ubuntu/.openclaw/agents/hermes_contacts/agent). Configure auth for this agent (openclaw agents add <id>) or copy auth-profiles.json from the main agentDir."
+      }
+    },
+    {
+      "id": "0d6970f5-82fc-48ce-844f-2de6b49c2c1f",
+      "agentId": "hermes",
+      "name": "HERMES Schedule",
+      "enabled": true,
+      "createdAtMs": 1773660982036,
+      "updatedAtMs": 1773887400593,
+      "schedule": {
+        "kind": "cron",
+        "expr": "0 8 * * *",
+        "tz": "Asia/Kolkata"
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "message": "Scheduled routine check"
+      },
+      "delivery": {
+        "mode": "announce",
+        "channel": "last"
+      },
+      "state": {
+        "nextRunAtMs": 1773973800000,
+        "lastRunAtMs": 1773887400566,
+        "lastRunStatus": "error",
+        "lastStatus": "error",
+        "lastDurationMs": 27,
+        "lastErrorReason": "auth",
+        "lastDeliveryStatus": "unknown",
+        "consecutiveErrors": 3,
+        "lastError": "FailoverError: No API key found for provider \"anthropic\". Auth store: /home/ubuntu/.openclaw/agents/hermes/agent/auth-profiles.json (agentDir: /home/ubuntu/.openclaw/agents/hermes/agent). Configure auth for this agent (openclaw agents add <id>) or copy auth-profiles.json from the main agentDir."
+      }
+    },
+    {
+      "id": "1e1b2f3f-8b27-4c10-a945-ce850fc873c9",
+      "agentId": "demeter",
+      "name": "DEMETER Schedule",
+      "enabled": true,
+      "createdAtMs": 1773660994775,
+      "updatedAtMs": 1773887400635,
+      "schedule": {
+        "kind": "cron",
+        "expr": "0 8 * * *",
+        "tz": "Asia/Kolkata"
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "message": "Scheduled routine check"
+      },
+      "delivery": {
+        "mode": "announce",
+        "channel": "last"
+      },
+      "state": {
+        "nextRunAtMs": 1773973800000,
+        "lastRunAtMs": 1773887400593,
+        "lastRunStatus": "error",
+        "lastStatus": "error",
+        "lastDurationMs": 42,
+        "lastErrorReason": "auth",
+        "lastDeliveryStatus": "unknown",
+        "consecutiveErrors": 3,
+        "lastError": "FailoverError: No API key found for provider \"anthropic\". Auth store: /home/ubuntu/.openclaw/agents/demeter/agent/auth-profiles.json (agentDir: /home/ubuntu/.openclaw/agents/demeter/agent). Configure auth for this agent (openclaw agents add <id>) or copy auth-profiles.json from the main agentDir."
+      }
+    },
+    {
+      "id": "8754a985-5535-44ad-917f-15007a6e2ed0",
+      "agentId": "hygieia",
+      "name": "HYGIEIA Schedule",
+      "enabled": true,
+      "createdAtMs": 1773661009429,
+      "updatedAtMs": 1773887400679,
+      "schedule": {
+        "kind": "cron",
+        "expr": "0 8 * * *",
+        "tz": "Asia/Kolkata"
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "message": "Scheduled routine check"
+      },
+      "delivery": {
+        "mode": "announce",
+        "channel": "last"
+      },
+      "state": {
+        "nextRunAtMs": 1773973800000,
+        "lastRunAtMs": 1773887400635,
+        "lastRunStatus": "error",
+        "lastStatus": "error",
+        "lastDurationMs": 44,
+        "lastErrorReason": "auth",
+        "lastDeliveryStatus": "unknown",
+        "consecutiveErrors": 3,
+        "lastError": "FailoverError: No API key found for provider \"anthropic\". Auth store: /home/ubuntu/.openclaw/agents/hygieia/agent/auth-profiles.json (agentDir: /home/ubuntu/.openclaw/agents/hygieia/agent). Configure auth for this agent (openclaw agents add <id>) or copy auth-profiles.json from the main agentDir."
+      }
+    },
+    {
+      "id": "a044dd2f-3f84-46ee-a7d0-def71db200de",
+      "agentId": "asteria",
+      "name": "ASTERIA Schedule",
+      "enabled": true,
+      "createdAtMs": 1773661022270,
+      "updatedAtMs": 1773887400707,
+      "schedule": {
+        "kind": "cron",
+        "expr": "0 8 * * *",
+        "tz": "Asia/Kolkata"
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "message": "Scheduled routine check"
+      },
+      "delivery": {
+        "mode": "announce",
+        "channel": "last"
+      },
+      "state": {
+        "nextRunAtMs": 1773973800000,
+        "lastRunAtMs": 1773887400679,
+        "lastRunStatus": "error",
+        "lastStatus": "error",
+        "lastDurationMs": 28,
+        "lastErrorReason": "auth",
+        "lastDeliveryStatus": "unknown",
+        "consecutiveErrors": 3,
+        "lastError": "FailoverError: No API key found for provider \"anthropic\". Auth store: /home/ubuntu/.openclaw/agents/asteria/agent/auth-profiles.json (agentDir: /home/ubuntu/.openclaw/agents/asteria/agent). Configure auth for this agent (openclaw agents add <id>) or copy auth-profiles.json from the main agentDir."
+      }
+    },
+    {
+      "id": "60882274-f1aa-473c-a6c2-99d038663180",
+      "agentId": "proteus",
+      "name": "PROTEUS Schedule",
+      "enabled": true,
+      "createdAtMs": 1773661040893,
+      "updatedAtMs": 1773887400744,
+      "schedule": {
+        "kind": "cron",
+        "expr": "0 8 * * *",
+        "tz": "Asia/Kolkata"
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "message": "Scheduled routine check"
+      },
+      "delivery": {
+        "mode": "announce",
+        "channel": "last"
+      },
+      "state": {
+        "nextRunAtMs": 1773973800000,
+        "lastRunAtMs": 1773887400707,
+        "lastRunStatus": "error",
+        "lastStatus": "error",
+        "lastDurationMs": 37,
+        "lastErrorReason": "auth",
+        "lastDeliveryStatus": "unknown",
+        "consecutiveErrors": 3,
+        "lastError": "FailoverError: No API key found for provider \"anthropic\". Auth store: /home/ubuntu/.openclaw/agents/proteus/agent/auth-profiles.json (agentDir: /home/ubuntu/.openclaw/agents/proteus/agent). Configure auth for this agent (openclaw agents add <id>) or copy auth-profiles.json from the main agentDir."
+      }
+    },
+    {
+      "id": "d522425d-e51c-4ca7-b071-12740b5c4c11",
+      "agentId": "moira",
+      "name": "MOIRA Schedule",
+      "enabled": true,
+      "createdAtMs": 1773661059005,
+      "updatedAtMs": 1773661059005,
+      "schedule": {
+        "kind": "cron",
+        "expr": "0 8 * * 1",
+        "tz": "Asia/Kolkata"
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "message": "Scheduled routine check"
+      },
+      "delivery": {
+        "mode": "announce",
+        "channel": "last"
+      },
+      "state": {
+        "nextRunAtMs": 1774233000000
+      }
+    },
+    {
+      "id": "70e403eb-5a78-4aa9-b015-414c2d362fbb",
+      "agentId": "midas",
+      "name": "MIDAS Schedule",
+      "enabled": true,
+      "createdAtMs": 1773661084303,
+      "updatedAtMs": 1773887400800,
+      "schedule": {
+        "kind": "cron",
+        "expr": "0 8 * * *",
+        "tz": "Asia/Kolkata"
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "message": "Scheduled routine check"
+      },
+      "delivery": {
+        "mode": "announce",
+        "channel": "last"
+      },
+      "state": {
+        "nextRunAtMs": 1773973800000,
+        "lastRunAtMs": 1773887400744,
+        "lastRunStatus": "error",
+        "lastStatus": "error",
+        "lastDurationMs": 56,
+        "lastErrorReason": "auth",
+        "lastDeliveryStatus": "unknown",
+        "consecutiveErrors": 3,
+        "lastError": "FailoverError: No API key found for provider \"anthropic\". Auth store: /home/ubuntu/.openclaw/agents/midas/agent/auth-profiles.json (agentDir: /home/ubuntu/.openclaw/agents/midas/agent). Configure auth for this agent (openclaw agents add <id>) or copy auth-profiles.json from the main agentDir."
+      }
+    },
+    {
+      "id": "a419ee67-6c4c-4971-8534-783ad0c79290",
+      "agentId": "metis",
+      "name": "METIS Schedule",
+      "enabled": true,
+      "createdAtMs": 1773661093891,
+      "updatedAtMs": 1773887400827,
+      "schedule": {
+        "kind": "cron",
+        "expr": "0 8 * * *",
+        "tz": "Asia/Kolkata"
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "message": "Scheduled routine check"
+      },
+      "delivery": {
+        "mode": "announce",
+        "channel": "last"
+      },
+      "state": {
+        "nextRunAtMs": 1773973800000,
+        "lastRunAtMs": 1773887400800,
+        "lastRunStatus": "error",
+        "lastStatus": "error",
+        "lastDurationMs": 27,
+        "lastErrorReason": "auth",
+        "lastDeliveryStatus": "unknown",
+        "consecutiveErrors": 3,
+        "lastError": "FailoverError: No API key found for provider \"anthropic\". Auth store: /home/ubuntu/.openclaw/agents/metis/agent/auth-profiles.json (agentDir: /home/ubuntu/.openclaw/agents/metis/agent). Configure auth for this agent (openclaw agents add <id>) or copy auth-profiles.json from the main agentDir."
+      }
+    },
+    {
+      "id": "b9ad92d0-7d7a-4840-a09b-c8a219e56e6e",
+      "agentId": "hera",
+      "name": "HERA Schedule",
+      "enabled": true,
+      "createdAtMs": 1773661102156,
+      "updatedAtMs": 1773661102156,
+      "schedule": {
+        "kind": "cron",
+        "expr": "0 8 1 * *",
+        "tz": "Asia/Kolkata"
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "message": "Scheduled routine check"
+      },
+      "delivery": {
+        "mode": "announce",
+        "channel": "last"
+      },
+      "state": {
+        "nextRunAtMs": 1775010600000
+      }
+    }
+  ]
+}

@@ -129,3 +129,5 @@ if [ -z "$TMUX" ] && ([ -n "$SSH_CONNECTION" ] || [ -n "$MOSH_CONNECTION" ]); th
 fi
 # === END TMUX AUTO-ATTACH CONFIG ===
 
+export PATH="$HOME/.npm-global/bin:$PATH"
+export PATH="/home/ubuntu/.npm-global/bin:$PATH"

@@ -6,6 +6,10 @@ services:
     ports:
       - "5678:5678"
     environment:
+      - N8N_TRUST_PROXY=true
+      - N8N_BLOCK_NODES=
+      - N8N_TRUST_PROXY=true
+      - N8N_BLOCK_NODES=
       # n8n Configuration
       - N8N_PORT=5678
       - N8N_PROTOCOL=https

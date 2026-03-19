@@ -1,0 +1,131 @@
+{
+  "name": "Pantheon: Calendar to Memory",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "hours",
+              "hoursInterval": 2
+            }
+          ]
+        }
+      },
+      "id": "e5f6a7b8-c9d0-1234-ef12-345678901234",
+      "name": "Schedule Every 2 Hours",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [240, 300]
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "calendar": {
+          "__rl": true,
+          "value": "primary",
+          "mode": "list"
+        },
+        "returnAll": false,
+        "limit": 100,
+        "options": {
+          "timeMin": "={{ $now.minus({hours: 2}).toISO() }}",
+          "timeMax": "={{ $now.plus({days: 7}).toISO() }}"
+        }
+      },
+      "id": "f6a7b8c9-d0e1-2345-f123-456789012345",
+      "name": "Fetch Calendar Events",
+      "type": "n8n-nodes-base.googleCalendar",
+      "typeVersion": 1.1,
+      "position": [460, 300],
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "REPLACE_WITH_YOUR_CALENDAR_CREDENTIAL_ID",
+          "name": "Google Calendar OAuth2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Transform Calendar data to memory format\nconst items = [];\n\nfor (const item of $input.all()) {\n  const event = item.json;\n  \n  const startTime = event.start?.dateTime || event.start?.date;\n  const endTime = event.end?.dateTime || event.end?.date;\n  \n  const contentParts = [\n    event.summary || '(no title)',\n    event.description ? `Description: ${event.description}` : '',\n    startTime ? `Start: ${startTime}` : '',\n    endTime ? `End: ${endTime}` : '',\n    event.location ? `Location: ${event.location}` : ''\n  ].filter(Boolean);\n  \n  const content = contentParts.join('\\n');\n  \n  items.push({\n    timestamp: startTime || new Date().toISOString(),\n    content: content.substring(0, 3000),\n    metadata: {\n      title: event.summary || '(no title)',\n      location: event.location,\n      participants: event.attendees?.map(a => a.email) || [],\n      eventId: event.id,\n      status: event.status\n    }\n  });\n}\n\nreturn [{ json: { type: 'calendar', items } }];"
+      },
+      "id": "a7b8c9d0-e1f2-3456-1234-567890123456",
+      "name": "Transform to Memory Format",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [680, 300]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://141.148.210.250:3001/api/memory/ingest",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-API-Key",
+              "value": "65f7a184488e0bccaa23dd83ff114ac9fc7815c834b3e29ab717ba79f7537863"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify($json) }}",
+        "options": {}
+      },
+      "id": "b8c9d0e1-f2a3-4567-2345-678901234567",
+      "name": "Ingest to Memory",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [900, 300]
+    }
+  ],
+  "connections": {
+    "Schedule Every 2 Hours": {
+      "main": [
+        [
+          {
+            "node": "Fetch Calendar Events",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch Calendar Events": {
+      "main": [
+        [
+          {
+            "node": "Transform to Memory Format",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Transform to Memory Format": {
+      "main": [
+        [
+          {
+            "node": "Ingest to Memory",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "tags": [],
+  "triggerCount": 0,
+  "updatedAt": "2026-03-19T00:00:00.000Z",
+  "versionId": "1"
+}

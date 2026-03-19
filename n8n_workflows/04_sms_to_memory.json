@@ -1,0 +1,90 @@
+{
+  "name": "Pantheon: SMS to Memory",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "tasker-sms",
+        "responseMode": "lastNode",
+        "options": {}
+      },
+      "id": "a3b4c5d6-e7f8-9012-7890-123456789012",
+      "name": "Tasker SMS Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [240, 300],
+      "webhookId": "tasker-sms-webhook-pantheon"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Transform Tasker SMS data to memory format\nconst sms = $input.first().json;\n\nconst items = [{\n  timestamp: sms.timestamp || new Date().toISOString(),\n  content: sms.body || sms.message || sms.text || '(no content)',\n  metadata: {\n    from: sms.from || sms.sender || 'Unknown',\n    to: sms.to || 'VPK',\n    phone: sms.number || sms.phone,\n    direction: sms.direction || 'incoming'\n  }\n}];\n\nreturn [{ json: { type: 'sms', items } }];"
+      },
+      "id": "b4c5d6e7-f8a9-0123-8901-234567890123",
+      "name": "Transform to Memory Format",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [460, 300]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://141.148.210.250:3001/api/memory/ingest",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-API-Key",
+              "value": "65f7a184488e0bccaa23dd83ff114ac9fc7815c834b3e29ab717ba79f7537863"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify($json) }}",
+        "options": {}
+      },
+      "id": "c5d6e7f8-a9b0-1234-9012-345678901234",
+      "name": "Ingest to Memory",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [680, 300]
+    }
+  ],
+  "connections": {
+    "Tasker SMS Webhook": {
+      "main": [
+        [
+          {
+            "node": "Transform to Memory Format",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Transform to Memory Format": {
+      "main": [
+        [
+          {
+            "node": "Ingest to Memory",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "tags": [],
+  "triggerCount": 0,
+  "updatedAt": "2026-03-19T00:00:00.000Z",
+  "versionId": "1"
+}
