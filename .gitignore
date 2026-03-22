@@ -8,8 +8,19 @@
 .local/
 .venv/
 .claude/
+.openclaw/
 node_modules/
 __pycache__/
+.output/
+.nuxt/
+.claude.json*
+.config/
+.bash_history
+.bash_logout
+.bashrc
+.profile
+.sudo_as_admin_successful
+.pm2/pids/
 
 # Application Data & Databases
 *.db

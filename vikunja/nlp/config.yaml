@@ -1,0 +1,125 @@
+# Vikunja NLP Configuration
+# VPK's Pantheon - Comprehensive Task Management NLP
+
+vikunja:
+  api_url: http://localhost:3456
+  api_version: v1
+  default_project: inbox
+  timezone: Asia/Kolkata
+
+nlp:
+  # LLM Configuration
+  llm:
+    provider: groq
+    model: llama-3.3-70b-versatile
+    temperature: 0.1
+    max_tokens: 500
+    fallback_to_regex: true
+
+  # Parser Settings
+  parsers:
+    date:
+      enabled: true
+      prefer_future: true
+      include_time: true
+      default_time: "09:00"  # If only date is specified
+
+    priority:
+      enabled: true
+      emoji_detection: true
+      keyword_detection: true
+      default: 0  # 0=none, 1=low, 2=med, 3=high, 4=urgent, 5=critical
+
+    project:
+      enabled: true
+      auto_detect: true
+      create_if_missing: false
+      hints:  # Keyword → Project mapping
+        health: health
+        fitness: health
+        workout: health
+        gym: health
+        doctor: health
+        finance: finance
+        money: finance
+        pay: finance
+        bill: finance
+        budget: finance
+        study: study
+        exam: study
+        learn: study
+        lecture: study
+        mba: study
+        work: work
+        meeting: work
+        report: work
+        office: work
+        home: home
+        house: home
+        clean: home
+        duty: duty
+        hospital: duty
+        apollo: duty
+        ward: duty
+        shift: duty
+        errand: errands
+        grocery: errands
+        shopping: errands
+
+    recurrence:
+      enabled: true
+      patterns:
+        - daily
+        - weekly
+        - monthly
+        - yearly
+        - weekdays
+        - weekends
+
+    labels:
+      enabled: true
+      auto_create: true
+      extract_hashtags: true
+
+    reminders:
+      enabled: true
+      default_minutes_before: 30
+      smart_reminders: true  # Adjust based on task type
+
+  # Smart Features
+  smart:
+    context_aware: true
+    conflict_detection: true  # Check Apollo duty conflicts
+    duty_aware: true  # Knows when VPK is on duty
+    learn_patterns: true  # Learn from past tasks
+    auto_categorize: true
+
+# Integration
+integration:
+  telegram:
+    enabled: true
+    quick_actions: true
+    inline_mode: true
+    button_controls: true
+
+  chronos:
+    enabled: true
+    sync_to_briefings: true
+    sync_from_obsidian: true
+
+  memory_store:
+    enabled: true
+    use_for_context: true
+
+# Performance
+performance:
+  cache_enabled: true
+  cache_ttl: 300  # seconds
+  batch_size: 50
+  max_retries: 3
+
+# Logging
+logging:
+  level: INFO
+  format: "%(asctime)s [%(name)s] %(levelname)s: %(message)s"
+  file: /home/ubuntu/vikunja/nlp/logs/nlp.log

@@ -1,0 +1,17 @@
+services:
+  vikunja:
+    image: vikunja/vikunja:latest
+    container_name: vikunja
+    restart: unless-stopped
+    ports:
+      - "3456:3456"
+    environment:
+      VIKUNJA_SERVICE_PUBLICURL: https://tasks.katthan.online
+      VIKUNJA_DATABASE_TYPE: sqlite
+      VIKUNJA_SERVICE_JWT_SECRET: vjpk2026Pantheon_nx9mR3sT5wK8aB4cDeF0gHiJlQu1yZ6pV
+      VIKUNJA_SERVICE_ENABLEREGISTRATION: "false"
+      VIKUNJA_LOG_LEVEL: WARNING
+      TZ: Asia/Kolkata
+    volumes:
+      - ./data:/app/vikunja/files
+      - ./db:/db

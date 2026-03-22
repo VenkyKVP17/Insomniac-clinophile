@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Import Pantheon workflows into n8n database"""
+"""Import Pantheon workflows into n8n database with correct activation (v2)"""
 import json
 import sqlite3
 import uuid
@@ -24,18 +24,19 @@ DB_PATH = '/home/ubuntu/pantheon_n8n/data/database.sqlite'
 PROJECT_ID = 'TtDwVqcihXTy8S6D'
 
 def import_workflow(conn, workflow_file):
-    """Import a workflow JSON file into n8n database, overwriting if exists"""
+    """Import a workflow JSON file into n8n database, correctly activating it"""
 
     # Read workflow JSON
     with open(workflow_file, 'r') as f:
         workflow = json.load(f)
 
-    # Generate IDs
-    workflow_id = str(uuid.uuid4())
-    version_id = workflow.get('versionId', str(uuid.uuid4()))
-
     # Extract workflow data
     name = workflow.get('name', 'Untitled')
+    
+    # Use stable UUID based on name
+    workflow_id = str(uuid.uuid5(uuid.NAMESPACE_DNS, f"pantheon.workflow.{name}"))
+    version_id = str(uuid.uuid5(uuid.NAMESPACE_DNS, f"pantheon.version.{name}.v1"))
+
     nodes = json.dumps(workflow.get('nodes', []))
     connections = json.dumps(workflow.get('connections', {}))
     settings = json.dumps(workflow.get('settings', {}))
@@ -45,38 +46,44 @@ def import_workflow(conn, workflow_file):
 
     cursor = conn.cursor()
     
-    # DELETE if exists to avoid NOT NULL constraints on ID changes (or just replace)
-    cursor.execute("DELETE FROM workflow_entity WHERE name = ?", (name,))
+    # 1. DELETE existing to avoid conflicts
+    cursor.execute("DELETE FROM workflow_history WHERE workflowId = ?", (workflow_id,))
+    cursor.execute("DELETE FROM workflow_entity WHERE id = ? OR name = ?", (workflow_id, name))
     
-    # Insert workflow
     now = datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S.%f')[:-3]
 
+    # 2. Insert into workflow_history (Required for "published" status)
+    cursor.execute("""
+        INSERT INTO workflow_history (
+            versionId, workflowId, authors, nodes, connections, name, createdAt, updatedAt
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+    """, (version_id, workflow_id, '["Zeus"]', nodes, connections, name, now, now))
+
+    # 3. Insert into workflow_entity with activeVersionId
     cursor.execute("""
         INSERT INTO workflow_entity (
             id, name, active, nodes, connections, settings, staticData,
-            pinData, versionId, triggerCount, createdAt, updatedAt
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            pinData, versionId, activeVersionId, triggerCount, createdAt, updatedAt
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     """, (
         workflow_id, name, True, nodes, connections, settings,
-        static_data, pin_data, version_id, trigger_count, now, now
+        static_data, pin_data, version_id, version_id, trigger_count, now, now
     ))
 
-    conn.commit()
-    
-    # Ensure it's shared with the project
+    # 4. Ensure it's shared with the project
     cursor.execute("""
         INSERT OR IGNORE INTO shared_workflow (workflowId, projectId, role, createdAt, updatedAt)
         VALUES (?, ?, 'workflow:owner', ?, ?)
     """, (workflow_id, PROJECT_ID, now, now))
     
     conn.commit()
-    print(f"✅ Imported/Updated: {name} (ID: {workflow_id})")
+    print(f"✅ Activated: {name}")
     return True
 
 def main():
     """Main import function"""
-    print("🏛️ Pantheon Workflow Import")
-    print("=" * 50)
+    print("🏛️ Pantheon Workflow Activation (ZEUS Edition)")
+    print("=" * 60)
 
     # Connect to database
     conn = sqlite3.connect(DB_PATH)
@@ -85,18 +92,19 @@ def main():
     for workflow_file in WORKFLOWS:
         filepath = Path('/home/ubuntu/pantheon_n8n') / workflow_file
         if filepath.exists():
-            if import_workflow(conn, filepath):
-                imported += 1
+            try:
+                if import_workflow(conn, filepath):
+                    imported += 1
+            except Exception as e:
+                print(f"❌ Failed to activate {workflow_file}: {e}")
         else:
             print(f"❌ File not found: {workflow_file}")
 
     conn.close()
 
-    print("=" * 50)
-    print(f"✅ Imported {imported}/{len(WORKFLOWS)} workflows")
-    print("\n📝 Next steps:")
-    print("  1. Restart n8n: docker compose restart")
-    print("  2. Check workflows in UI: https://n8n-nyx.katthan.online")
+    print("=" * 60)
+    print(f"✅ Activated {imported}/{len(WORKFLOWS)} workflows")
+    print("\n📝 IMPORTANT: Restart n8n container to reload workflows!")
 
 if __name__ == '__main__':
     main()
